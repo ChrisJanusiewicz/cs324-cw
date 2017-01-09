@@ -12,11 +12,19 @@
 #include <unistd.h> // for usleep
 
 #include "load_and_bind_texture.h"
+#include "game_object.h"
+#include "graphics_object.h"
+
+#include <vector>
+#include <memory>
 
 bool g_spinning = false;
 int g_spin = 0;
 
 const int NUM_SIDES = 5;
+const unsigned int DEFAULT_COLOR = 0xFFFF00FF; //ARGB
+
+std::unique_ptr<game_object> root;
 
 enum wall_sides_t {
   NORTH=0,
@@ -46,7 +54,40 @@ float g_wall_vertices[NUM_SIDES][4][3];
 unsigned int g_tex_handle_floor = 0;
 unsigned int g_tex_handle_wall[NUM_SIDES];
 
+/*struct point3i {
+  int x;
+  int y;
+  int z;
 
+  point3i(int x, int y, int z) {
+    this->x = x;
+    this->y = y;
+    this->z = z;
+  }
+};*/
+
+/*class g_tex_object : g_object {
+
+  //texture coordinates
+  std::vector<point2f> tex_coords;
+
+  //Triangle indices for texture coordinates
+  //First triangle will have vertices 0, 1, 2, etc
+  std::vector<int> tex_indices;
+
+  //Handle to the texture used for this object
+  unsigned int tex_handle;
+
+  g_tex_object(std::vector<point3f> vertices,
+    std::vector<point2f> tex_coords,
+    std::vector<int> vertex_indices,
+    std::vector<int> tex_indices,
+    unsigned int tex_handle) {
+      g_object(vertices, vertex_indices, DEFAULT_COLOR);
+
+  }
+
+};*/
 
 
 void load_and_bind_textures()
@@ -77,68 +118,17 @@ void display()
 	// position and orient camera
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-	gluLookAt(0, 0.25, 2.5, // eye position
-			  0, 0, 0.0, // reference point
-			  0, 1, 0  // up vector
+	gluLookAt(0.0f, 1.5f, 10.0f, // eye position
+			  0.0f, 0.0f, 0.0f, // reference point
+			  0.0f, 1.0f, 0.0f  // up vector
 		);
 
-	glPushMatrix();
-		glRotatef(g_spin, 0, 1, 0);
-
-		glEnable(GL_TEXTURE_2D);
-
-		// map the road surface
-		glBindTexture(GL_TEXTURE_2D, g_tex_handle_floor);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0.0f, 0.0f);
-			glVertex3f(-0.5f, -0.5f, 0.5f);
-			glTexCoord2f(1.0f, 0.0f);
-			glVertex3f(0.5f, -0.5f, 0.5f);
-			glTexCoord2f(1.0f, 1.0f);
-			glVertex3f(0.5f, -0.5f, -0.5f);
-			glTexCoord2f(0.0f, 1.0f);
-			glVertex3f(-0.5f, -0.5f, -0.5f);
-		glEnd();
-
-		// do other textures here
-		// do each side
-		for (size_t s=0;s<NUM_SIDES;s++)
-		{
-			glBindTexture(GL_TEXTURE_2D, g_tex_handle_wall[s]);
-			glBegin(GL_QUADS);
-				for (size_t i=0;i<4;i++)
-				{
-					glTexCoord2f(
-						(g_wall_source_coords[s][i][0]/547.0f) ,
-						(411-g_wall_source_coords[s][i][1])/411.0f
-					);
-					glVertex3fv(g_wall_vertices[s][i]);
-				}
-			glEnd();
-		}
-
-		glDisable(GL_TEXTURE_2D);
-
-		// draw the edges in wire frame
-		glPushAttrib(GL_CURRENT_BIT);
-			glColor3f(1.0f, 1.0f, 0.0f);
-			for (size_t s=0;s<NUM_SIDES;s++)
-			{
-				glBegin(GL_LINE_LOOP);
-				for (size_t v=0;v<4;v++)
-					glVertex3fv(g_wall_vertices[s][v]);
-				glEnd();
-			}
-		glPopAttrib();
-
-
-	glPopMatrix();
+  root->display();
 
 	glutSwapBuffers();
 }
 
-void keyboard(unsigned char key, int, int)
-{
+void keyboard(unsigned char key, int, int) {
 	switch (key)
 	{
 		case 'q': exit(1); break;
@@ -154,8 +144,7 @@ void keyboard(unsigned char key, int, int)
 	glutPostRedisplay();
 }
 
-void reshape(int w, int h)
-{
+void reshape(int w, int h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -184,26 +173,30 @@ void prepare_wall_vertices() {
 
 }
 
-void init()
-{
+void init() {
   prepare_wall_vertices();
 	load_and_bind_textures();
 
-	GLenum error = glGetError();
-	if (error!=GL_NO_ERROR)
-		fprintf(stderr, "GL error %s\n", gluErrorString(error));
+  root.reset(new game_object(new point3f(),
+    new point3f(),
+    new point3f(1.0f, 1.0f, 1.0f),
+    NULL));
 
+
+	GLenum error = glGetError();
+	if (error!=GL_NO_ERROR) {
+		fprintf(stderr, "GL error %s\n", gluErrorString(error));
+  }
 
 	glEnable(GL_DEPTH_TEST);
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize(640, 640);
 	glutInitWindowPosition(50, 50);
-	glutCreateWindow("VW Camper Van");
+	glutCreateWindow("Maze");
 
 	// get texture ready before we need it
 	init();
