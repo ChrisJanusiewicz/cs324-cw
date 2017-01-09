@@ -13,14 +13,13 @@ public:
   graphics_object (std::vector<point3f> *vertices,
     std::vector<int> *vertex_indices,
     int color) {
-      
+
       this->vertices = *vertices;
       this->vertex_indices = *vertex_indices;
       this->color = color;
 
   }
-  void display() {
-    std::cout << "Attempting to display graphics_object" << std::endl;
+  virtual void display() {
 
 
     glBegin(GL_TRIANGLES);
@@ -35,7 +34,6 @@ public:
       }
     glEnd();
 
-    std::cout << "Finished displaying graphics_object" << std::endl;
 
   }
 
