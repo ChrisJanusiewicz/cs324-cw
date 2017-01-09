@@ -34,25 +34,14 @@ enum wall_sides_t {
   TOP=4
 };
 
-//Wall element (cuboid) properties
-const float g_wall_thickness = 1.0f;
-const float g_wall_height = 2.0f;
 
-//coordinates on the input images
-const int g_wall_source_coords[NUM_SIDES][4][2] = {
-	{{0, 0}, {0, 1}, {1, 1}, {1, 0}},
-	{{0, 0}, {0, 1}, {1, 1}, {1, 0}},
-	{{0, 0}, {0, 1}, {1, 1}, {1, 0}},
-	{{0, 0}, {0, 1}, {1, 1}, {1, 0}},
-	{{0, 0}, {0, 1}, {1, 1}, {1, 0}}
-};
 
-// target coordinates
-float g_wall_vertices[NUM_SIDES][4][3];
 
-// texture handles
-unsigned int g_tex_handle_floor = 0;
-unsigned int g_tex_handle_wall[NUM_SIDES];
+  float mat_ambient[] = {0.3, 0.3, 0.3, 1.0};
+  float mat_diffuse[] = {0.75, 0.75, 0.75, 1.0};
+  float mat_specular[] = {1.0, 1.0, 1.0, 1.0};
+  float mat_shininess[] = {50.0};
+
 
 /*struct point3i {
   int x;
@@ -66,40 +55,13 @@ unsigned int g_tex_handle_wall[NUM_SIDES];
   }
 };*/
 
-/*class g_tex_object : g_object {
-
-  //texture coordinates
-  std::vector<point2f> tex_coords;
-
-  //Triangle indices for texture coordinates
-  //First triangle will have vertices 0, 1, 2, etc
-  std::vector<int> tex_indices;
-
-  //Handle to the texture used for this object
-  unsigned int tex_handle;
-
-  g_tex_object(std::vector<point3f> vertices,
-    std::vector<point2f> tex_coords,
-    std::vector<int> vertex_indices,
-    std::vector<int> tex_indices,
-    unsigned int tex_handle) {
-      g_object(vertices, vertex_indices, DEFAULT_COLOR);
-
-  }
-
-};*/
 
 
 void load_and_bind_textures() {
 	// load all textures here
-	g_tex_handle_floor = load_and_bind_texture("images/floor.png");
+	//g_tex_handle_floor = load_and_bind_texture("images/floor.png");
+	//g_tex_handle_wall = load_and_bind_texture("images/wall.png");
 
-	// load the camper images here
-	g_tex_handle_wall[NORTH] = load_and_bind_texture("images/wall-north.png");
-	g_tex_handle_wall[WEST] = load_and_bind_texture("images/wall-west.png");
-	g_tex_handle_wall[SOUTH] = load_and_bind_texture("images/wall-south.png");
-	g_tex_handle_wall[EAST] = load_and_bind_texture("images/wall-east.png");
-	g_tex_handle_wall[TOP] = load_and_bind_texture("images/wall-top.png");
 
 }
 
@@ -125,16 +87,16 @@ void display()  {
     );
 
 
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-  glColor3f(1.0f, 1.0f, 1.0f);
+  glColor3f(1.0f, 0.8f, 1.0f);
 
 
-  glDisable(GL_LIGHTING);
+    glEnable(GL_LIGHTING);
   //glutWireCube(0.5);
   root->display();
 
-  glEnable(GL_LIGHTING);
+  glDisable(GL_LIGHTING);
 
   glutSwapBuffers();
 
@@ -166,28 +128,17 @@ void reshape(int w, int h) {
 }
 
 
-void prepare_wall_vertices() {
-  float g_l = -0.5f * g_wall_thickness;
-  float g_r = 0.5f * g_wall_thickness;
-  float g_k = -0.5f * g_wall_thickness;
-  float g_f = 0.5f * g_wall_thickness;
-  float g_b = 0.0f;
-  float g_t = g_wall_height;
-  float vertices[NUM_SIDES][4][3] = {
-   	{{g_l, g_b, g_f}, {g_r, g_b, g_f}, {g_r, g_t, g_f}, {g_l, g_t, g_f}}, // front
-   	{{g_r, g_b, g_f}, {g_r, g_b, g_k}, {g_r, g_t, g_k}, {g_r, g_t, g_f}}, // left-side
-   	{{g_l, g_b, g_k}, {g_l, g_b, g_f}, {g_l, g_t, g_f}, {g_l, g_t, g_k}}, // right-side
-   	{{g_r, g_b, g_k}, {g_l, g_b, g_k}, {g_l, g_t, g_k}, {g_r, g_t, g_k}},  // back
-   	{{g_r, g_t, g_f}, {g_r, g_t, g_k}, {g_l, g_t, g_k}, {g_l, g_t, g_f}} // top
-  };
-  std::copy((vertices), (vertices) + NUM_SIDES, (g_wall_vertices));
-
-
-
-}
 
 void init() {
 	//load_and_bind_textures();
+
+
+
+  glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+
 
   //prepare root object
   root.reset(new game_object(new point3f(),
@@ -231,7 +182,7 @@ void init() {
   root->set_graphics_object(g_object);
 
 
-  game_object *wall2 = new game_object(new point3f(0.0f, -2.0f, 0.0f),
+  game_object *wall2 = new game_object(new point3f(0.0f, 0.0f, 1.0f),
     new point3f(1.0f, 1.0f, 1.0f),
     new point3f(0.0f, 1.0f, 0.0f),
     45.0f,

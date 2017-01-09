@@ -11,6 +11,10 @@
 
 class game_object {
 
+
+  // properties of default material
+
+
 public:
 
   game_object() {
