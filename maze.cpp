@@ -90,8 +90,7 @@ unsigned int g_tex_handle_wall[NUM_SIDES];
 };*/
 
 
-void load_and_bind_textures()
-{
+void load_and_bind_textures() {
 	// load all textures here
 	g_tex_handle_floor = load_and_bind_texture("images/floor.png");
 
@@ -111,59 +110,33 @@ void idle()
 	glutPostRedisplay();
 }
 
-void display()
-{
+void display()  {
   std::cout << "drawing..." << std::endl;
-  /*
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-
-  // position and orient camera
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-	gluLookAt(0.0f, 1.5f, -10.0f, // eye position
-			  0.0f, 0.0f, 0.0f, // reference point
-			  0.0f, 1.0f, 0.0f  // up vector
-		);
-
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-  glColor3f(1.0f, 0.0f, 1.0f);
-  glLineWidth(10.0f);
-  glutWireCube(0.5);
-
-  //root->display();
-
-	glutSwapBuffers();
-  */
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
   // position and orient camera
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-  gluLookAt(3, 1.5, 4, // eye position
+  gluLookAt(3, 1.5, 6, // eye position
         0, 0, 0, // reference point
         0, 1, 0  // up vector
     );
 
 
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   glColor3f(1.0f, 1.0f, 1.0f);
 
 
-    glDisable(GL_LIGHTING);
-    glutWireCube(0.5);
-    root->display();
-    glEnable(GL_LIGHTING);
+  glDisable(GL_LIGHTING);
+  //glutWireCube(0.5);
+  root->display();
 
+  glEnable(GL_LIGHTING);
 
-glDisable(GL_LIGHTING);
-  // put some help on the screen
-  //draw_text(20, 20, "Use 'z'/'Z' to change eye Z position");
-glEnable(GL_LIGHTING);
-
-
-glutSwapBuffers();
+  glutSwapBuffers();
 
 }
 
@@ -214,14 +187,15 @@ void prepare_wall_vertices() {
 }
 
 void init() {
-  //prepare_wall_vertices();
 	//load_and_bind_textures();
 
   //prepare root object
   root.reset(new game_object(new point3f(),
-    new point3f(),
     new point3f(1.0f, 1.0f, 1.0f),
+    new point3f(0.0f, 1.0f, 0.0f),
+    0.0f,
     NULL));
+
 
 
   glMatrixMode(GL_PROJECTION);
@@ -229,16 +203,42 @@ void init() {
 
 
   //prepare test graphical object
+  //initialise vector to hold vertex information
   std::vector<point3f> vertices;
-  vertices.push_back(*new point3f(0.0f, 0.0f, 0.0f));
-  vertices.push_back(*new point3f(1.0f, 0.0f, 0.0f));
-  vertices.push_back(*new point3f(1.0f, 0.0f, 1.0f));
-  vertices.push_back(*new point3f(0.0f, 0.0f, 1.0f));
-  std::vector<int> vertex_indices{0, 2, 1, 1, 2, 3};
+  //bottom of wall cuboid
+  vertices.push_back(*new point3f(-0.5f, 0.0f, -0.5f));
+  vertices.push_back(*new point3f(-0.5f, 0.0f, 0.5f));
+  vertices.push_back(*new point3f(0.5f, 0.0f, 0.5f));
+  vertices.push_back(*new point3f(0.5f, 0.0f, -0.5f));
+  //top of the wall cuboid
+  vertices.push_back(*new point3f(-0.5f, 2.0f, -0.5f));
+  vertices.push_back(*new point3f(-0.5f, 2.0f, 0.5f));
+  vertices.push_back(*new point3f(0.5f, 2.0f, 0.5f));
+  vertices.push_back(*new point3f(0.5f, 2.0f, -0.5f));
+
+  std::vector<int> vertex_indices{0, 4, 3, 3, 4, 7,
+  2, 3, 7, 2, 7, 6,
+  1, 2, 6, 1, 6, 5,
+  0, 1, 4, 4, 1, 5,
+  4, 5, 6, 4, 6, 7};
+
+
+
+
   int color = 0xFFFF00FF;
   graphics_object *g_object = new graphics_object(&vertices, &vertex_indices, color);
 
   root->set_graphics_object(g_object);
+
+
+  game_object *wall2 = new game_object(new point3f(0.0f, -2.0f, 0.0f),
+    new point3f(1.0f, 1.0f, 1.0f),
+    new point3f(0.0f, 1.0f, 0.0f),
+    45.0f,
+    NULL);
+
+  wall2->set_graphics_object(g_object);
+  root->add_child(wall2);
 
 
 	GLenum error = glGetError();

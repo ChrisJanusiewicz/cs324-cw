@@ -10,9 +10,6 @@
 class graphics_object {
 public:
 
-  /*g_object () {
-    //empty constructor?
-  }*/
   graphics_object (std::vector<point3f> *vertices,
     std::vector<int> *vertex_indices,
     int color) {
@@ -29,11 +26,11 @@ public:
       int n = 0;
       for (int i : vertex_indices) {
         glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
-        std::cout << "vertex: " << n++
+        /*std::cout << "vertex: " << n++
         << "\tindex: " << i
         << "\tx: " << vertices[i].x
         << "\ty: " << vertices[i].y
-        << "\tz: " << vertices[i].z << std::endl;
+        << "\tz: " << vertices[i].z << std::endl;*/
       }
     glEnd();
 

@@ -18,6 +18,10 @@ struct point3f {
     this->z = z;
   }
 
+/*  std::ostream& operator<<(std::ostream &stream, const point3f &p) {
+    return stream << "{" << x << ", " << y << ", " << z << "}"
+  } */
+
 };
 
 #endif
