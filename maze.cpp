@@ -113,19 +113,58 @@ void idle()
 
 void display()
 {
+  std::cout << "drawing..." << std::endl;
+  /*
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
-	// position and orient camera
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(0.0f, 1.5f, 10.0f, // eye position
+
+  // position and orient camera
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+	gluLookAt(0.0f, 1.5f, -10.0f, // eye position
 			  0.0f, 0.0f, 0.0f, // reference point
 			  0.0f, 1.0f, 0.0f  // up vector
 		);
 
-  root->display();
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glColor3f(1.0f, 0.0f, 1.0f);
+  glLineWidth(10.0f);
+  glutWireCube(0.5);
+
+  //root->display();
 
 	glutSwapBuffers();
+  */
+
+  glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+  // position and orient camera
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  gluLookAt(3, 1.5, 4, // eye position
+        0, 0, 0, // reference point
+        0, 1, 0  // up vector
+    );
+
+
+
+  glColor3f(1.0f, 1.0f, 1.0f);
+
+
+    glDisable(GL_LIGHTING);
+    glutWireCube(0.5);
+    root->display();
+    glEnable(GL_LIGHTING);
+
+
+glDisable(GL_LIGHTING);
+  // put some help on the screen
+  //draw_text(20, 20, "Use 'z'/'Z' to change eye Z position");
+glEnable(GL_LIGHTING);
+
+
+glutSwapBuffers();
+
 }
 
 void keyboard(unsigned char key, int, int) {
@@ -148,10 +187,11 @@ void reshape(int w, int h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(40.0, 1.0f, 1.0, 5.0);
+	gluPerspective(40.0, 1.0f, 1.0, 50.0);
 
 	glutPostRedisplay();
 }
+
 
 void prepare_wall_vertices() {
   float g_l = -0.5f * g_wall_thickness;
@@ -174,13 +214,31 @@ void prepare_wall_vertices() {
 }
 
 void init() {
-  prepare_wall_vertices();
-	load_and_bind_textures();
+  //prepare_wall_vertices();
+	//load_and_bind_textures();
 
+  //prepare root object
   root.reset(new game_object(new point3f(),
     new point3f(),
     new point3f(1.0f, 1.0f, 1.0f),
     NULL));
+
+
+  glMatrixMode(GL_PROJECTION);
+  gluPerspective(40.0, 1.0f, 1.0, 5.0);
+
+
+  //prepare test graphical object
+  std::vector<point3f> vertices;
+  vertices.push_back(*new point3f(0.0f, 0.0f, 0.0f));
+  vertices.push_back(*new point3f(1.0f, 0.0f, 0.0f));
+  vertices.push_back(*new point3f(1.0f, 0.0f, 1.0f));
+  vertices.push_back(*new point3f(0.0f, 0.0f, 1.0f));
+  std::vector<int> vertex_indices{0, 2, 1, 1, 2, 3};
+  int color = 0xFFFF00FF;
+  graphics_object *g_object = new graphics_object(&vertices, &vertex_indices, color);
+
+  root->set_graphics_object(g_object);
 
 
 	GLenum error = glGetError();
@@ -191,9 +249,10 @@ void init() {
 	glEnable(GL_DEPTH_TEST);
 }
 
+
 int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
 	glutInitWindowSize(640, 640);
 	glutInitWindowPosition(50, 50);
 	glutCreateWindow("Maze");

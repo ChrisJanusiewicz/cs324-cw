@@ -47,6 +47,9 @@ public:
 
   }
 
+  void set_graphics_object(graphics_object *g_object) {
+    this->g_object = g_object;
+  }
   
 
 
