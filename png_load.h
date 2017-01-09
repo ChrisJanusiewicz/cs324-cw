@@ -5,7 +5,7 @@
 
 int png_load(const char* file_name,
 		     int* width,
-			 int* height, 
+			 int* height,
 			 char** image_data_ptr)
 {
     png_byte header[8];
@@ -18,8 +18,9 @@ int png_load(const char* file_name,
         return 0;
     }
 
+		size_t read_result;
     // read the header
-    fread(header, 1, 8, fp);
+    read_result = fread(header, 1, 8, fp);
 
     if (png_sig_cmp(header, 0, 8))
     {
