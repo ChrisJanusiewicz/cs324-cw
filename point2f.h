@@ -1,3 +1,6 @@
+#ifndef POINT2F_H
+#define POINT2F_H
+
 struct point2f {
   float x;
   float y;
@@ -9,3 +12,5 @@ struct point2f {
   }
 
 };
+
+#endif

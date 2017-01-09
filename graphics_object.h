@@ -13,6 +13,7 @@ public:
   graphics_object (std::vector<point3f> *vertices,
     std::vector<int> *vertex_indices,
     int color) {
+      
       this->vertices = *vertices;
       this->vertex_indices = *vertex_indices;
       this->color = color;

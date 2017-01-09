@@ -14,6 +14,7 @@
 #include "load_and_bind_texture.h"
 #include "game_object.h"
 #include "graphics_object.h"
+#include "textured_graphics_object.h"
 
 #include <vector>
 #include <memory>
@@ -26,22 +27,12 @@ const unsigned int DEFAULT_COLOR = 0xFFFF00FF; //ARGB
 
 std::unique_ptr<game_object> root;
 
-enum wall_sides_t {
-  NORTH=0,
-  WEST=1,
-  SOUTH=2,
-  EAST=3,
-  TOP=4
-};
-
-
-
-
   float mat_ambient[] = {0.3, 0.3, 0.3, 1.0};
   float mat_diffuse[] = {0.75, 0.75, 0.75, 1.0};
   float mat_specular[] = {1.0, 1.0, 1.0, 1.0};
   float mat_shininess[] = {50.0};
 
+  float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
 
 /*struct point3i {
   int x;
@@ -55,12 +46,16 @@ enum wall_sides_t {
   }
 };*/
 
+unsigned int g_tex_handle_floor;
+unsigned int g_tex_handle_wall;
+
+
 
 
 void load_and_bind_textures() {
 	// load all textures here
-	//g_tex_handle_floor = load_and_bind_texture("images/floor.png");
-	//g_tex_handle_wall = load_and_bind_texture("images/wall.png");
+	g_tex_handle_floor = load_and_bind_texture("images/floor.png");
+	g_tex_handle_wall = load_and_bind_texture("images/wall.png");
 
 
 }
@@ -130,7 +125,22 @@ void reshape(int w, int h) {
 
 
 void init() {
-	//load_and_bind_textures();
+	load_and_bind_textures();
+
+
+  float light_ambient[] = {0.1, 0.1, 0.1, 1.0};
+  float light_diffuse[] = {0.8, 0.8, 0.8, 1.0};
+  glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+
+  glShadeModel(GL_SMOOTH);
+
+  // fix the light position
+  glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+
+  // enable lighting and turn on the light0
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
 
 
 
@@ -173,11 +183,45 @@ void init() {
   0, 1, 4, 4, 1, 5,
   4, 5, 6, 4, 6, 7};
 
+  std::vector<point2f> tex_coords;
+  tex_coords.push_back(*new point2f(0.0f, 0.0f));
+  tex_coords.push_back(*new point2f(63.0f, 0.0f));
+  tex_coords.push_back(*new point2f(64.0f, 0.0f));
+  tex_coords.push_back(*new point2f(127.0f, 0.0f));
+  tex_coords.push_back(*new point2f(128.0f, 0.0f));
+  tex_coords.push_back(*new point2f(191.0f, 0.0f));
+  tex_coords.push_back(*new point2f(192.0f, 0.0f));
+  tex_coords.push_back(*new point2f(255.0f, 0.0f));
+  tex_coords.push_back(*new point2f(256.0f, 0.0f));
+  tex_coords.push_back(*new point2f(319.0f, 0.0f));
 
+  tex_coords.push_back(*new point2f(0.0f, 127.0f));
+  tex_coords.push_back(*new point2f(63.0f, 127.0f));
+  tex_coords.push_back(*new point2f(64.0f, 127.0f));
+  tex_coords.push_back(*new point2f(127.0f, 127.0f));
+  tex_coords.push_back(*new point2f(128.0f, 127.0f));
+  tex_coords.push_back(*new point2f(191.0f, 127.0f));
+  tex_coords.push_back(*new point2f(192.0f, 127.0f));
+  tex_coords.push_back(*new point2f(256.0f, 127.0f));
+  tex_coords.push_back(*new point2f(255.0f, 63.0f));
+  tex_coords.push_back(*new point2f(319.0f, 63.0f));
+
+  std::vector<int> tex_indices{10, 0, 11, 11, 0, 1,
+  13, 12, 2, 13, 2, 3,
+  15, 14, 4, 15, 4, 5,
+  17, 16, 8, 7, 16, 6,
+  8, 9, 18, 18, 19, 9};
 
 
   int color = 0xFFFF00FF;
   graphics_object *g_object = new graphics_object(&vertices, &vertex_indices, color);
+  textured_graphics_object *t_object =
+    new textured_graphics_object(&vertices,
+      &vertex_indices,
+      &tex_coords,
+      &tex_indices,
+      g_tex_handle_wall);
+
 
   root->set_graphics_object(g_object);
 
@@ -188,8 +232,16 @@ void init() {
     45.0f,
     NULL);
 
+  game_object *wall3 = new game_object(new point3f(-1.0f, 0.0f, 2.0f),
+    new point3f(1.0f, 1.0f, 1.0f),
+    new point3f(0.0f, 1.0f, 0.0f),
+    12.0f,
+    NULL);
+
   wall2->set_graphics_object(g_object);
   root->add_child(wall2);
+  wall3->set_graphics_object(g_object);
+  root->add_child(wall3);
 
 
 	GLenum error = glGetError();
