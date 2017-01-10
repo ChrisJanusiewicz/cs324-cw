@@ -151,6 +151,8 @@ void reshape(int w, int h) {
 	glutPostRedisplay();
 }
 
+
+// Returns textured cuboid
 graphics_object* prepare_graphics_object(bool texture) {
   //prepare test graphical object
   //initialise vector to hold vertex information
@@ -223,7 +225,33 @@ graphics_object* prepare_graphics_object(bool texture) {
   }
 
 }
+void prepare_maze(game_object *root) {
 
+  graphics_object *wall = prepare_graphics_object(true);
+
+  int maze[][7] = {{0,0,0,0,0,0,0},
+    {0,1,1,1,1,1,1},
+    {0,1,0,0,0,0,0},
+    {0,1,0,1,1,1,0},
+    {0,1,0,1,0,0,0},
+    {0,1,1,1,1,1,0},
+    {0,0,0,0,0,1,0}};
+
+    point3f scale = new point3f(1.0f, 1.0f, 1.0f);
+    point3f rotation = new point3f(0.0f, 1.0f, 0.0f);
+
+    for (float x = 0; x < 2; x++) {
+      for (float y = 0; y < 2; y++) {
+        game_object g = *new game_object();
+        std::cout << &g << std::endl;
+        g.set_position(new point3f(x, 0, y));
+        //g.set_graphics_object(wall);
+        root->add_child(&g);
+
+      }
+    }
+
+}
 void init() {
 	load_and_bind_textures();
 
@@ -250,7 +278,8 @@ void init() {
   //prepare root object
   root.reset(new game_object());
 
-  root->set_graphics_object(prepare_graphics_object(true));
+  prepare_maze(&*root);
+  //root->set_graphics_object(prepare_graphics_object(true));
 
 
 

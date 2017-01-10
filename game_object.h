@@ -39,29 +39,47 @@ public:
 
   }
 
+  void set_position(point3f *position) {
+    this-> position = *position;
+
+  }
+
 
   void display() {
     std::cout << "Attempting to display game_object" << std::endl;
 
-    glPushMatrix();
-      glScalef(scale.x, scale.y, scale.z);
-      glRotatef(rotation_angle, rotation_axis.x, rotation_axis.y, rotation_axis.z);
-      glTranslatef(position.x, position.y, position.z);
-      /*
+    //glPushMatrix();
+
       std::cout << "Scaling by: " << scale.x << " " << scale.y << " " << scale.z << std::endl;
       std::cout << "Rotating by: " <<rotation_angle << " around:"
       << rotation_axis.x << " "
       << rotation_axis.y << " "
       << rotation_axis.z << std::endl;
       std::cout << "Translating by: " << position.x << " " << position.y << " " << position.z << std::endl;
-      */
-      for (game_object* g : children) {
-        std::cout << g << std::endl;
-        g->display();
 
+      glScalef(scale.x, scale.y, scale.z);
+      glRotatef(rotation_angle, rotation_axis.x, rotation_axis.y, rotation_axis.z);
+      glTranslatef(position.x, position.y, position.z);
+
+
+      std::cout << "Attempting to iterate through children" << std::endl;
+      for (game_object* g : children) {
+        if (g == NULL) {
+          std::cout << "null child" << std::endl;
+        } else {
+          //std::cout << g << std::endl;
+          g->display();
+        }
       }
-      if (g_object != NULL) {
+
+      std::cout << "done" << std::endl;
+
+      if (g_object == NULL) {
+        std::cout << "g_object is null" << std::endl;
+      } else {
+        std::cout << "attempting to draw the graphics object of this game_object" << std::endl;
         g_object->display();
+
       }
 
 
