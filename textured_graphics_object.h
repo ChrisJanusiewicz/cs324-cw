@@ -36,6 +36,7 @@ public:
 
   	// enable texturing and bind
   	glEnable(GL_TEXTURE_2D);
+    glShadeModel(GL_SMOOTH);
   	glBindTexture(GL_TEXTURE_2D, tex_handle);
 
     glBegin(GL_TRIANGLES);
@@ -43,16 +44,18 @@ public:
       int m = 0;
       //std::cout << "Number of vertex indices: " << n << std::endl;
       for (int i = 0; i < n; i++) {
-        point2f &tex = tex_coords[tex_indices[i]];
         point3f &vertex = vertices[vertex_indices[i]];
-        std::cout << "vertex: " << m++
+        point2f &tex = tex_coords[tex_indices[i]];
+        /*std::cout << "vertex: " << m++
         << "\tindex: " << i
         << "\tx: " << tex_coords[tex_indices[i]].x
         << "\ty: " << tex_coords[tex_indices[i]].y << std::endl;
       //  << "\tz: " << tex_coords[tex_indices[i]].z << std::endl;
+      */
 
+      glTexCoord2f(tex.x, tex.y);
         glVertex3f(vertex.x, vertex.y, vertex.z);
-        glTexCoord2f(tex.x, tex.y);
+        std::cout << vertex.x << "\t" << vertex.y << "\t" << vertex.z << "\t" << tex.x << "\t" << tex.y << std::endl;
       }
 
     glEnd();

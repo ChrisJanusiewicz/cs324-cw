@@ -18,6 +18,10 @@ class game_object {
 public:
 
   game_object() {
+    position = *new point3f();
+    scale = *new point3f(1.0f, 1.0f, 1.0f);
+    rotation_axis = *new point3f(0.0f, 1.0f, 0.0f);
+    rotation_angle = 0.0f;
     parent = NULL;
   }
 
