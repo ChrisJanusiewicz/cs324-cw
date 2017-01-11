@@ -31,7 +31,7 @@ public:
 
   }
   void display() override {
-    std::cout << "Attempting to display textured graphics_object" << std::endl;
+    //std::cout << "Attempting to display textured graphics_object" << std::endl;
 
 
   	// enable texturing and bind
@@ -50,19 +50,19 @@ public:
         << "\tindex: " << i
         << "\tx: " << tex_coords[tex_indices[i]].x
         << "\ty: " << tex_coords[tex_indices[i]].y << std::endl;
-      //  << "\tz: " << tex_coords[tex_indices[i]].z << std::endl;
-      */
+        //  << "\tz: " << tex_coords[tex_indices[i]].z << std::endl;
+        */
 
-      glTexCoord2f(tex.x, tex.y);
+        glTexCoord2f(tex.x, tex.y);
         glVertex3f(vertex.x, vertex.y, vertex.z);
-        std::cout << vertex.x << "\t" << vertex.y << "\t" << vertex.z << "\t" << tex.x << "\t" << tex.y << std::endl;
+        //std::cout << vertex.x << "\t" << vertex.y << "\t" << vertex.z << "\t" << tex.x << "\t" << tex.y << std::endl;
       }
 
     glEnd();
 
   	glDisable(GL_TEXTURE_2D);
 
-    std::cout << "Finished displaying textured graphics_object" << std::endl;
+    //std::cout << "Finished displaying textured graphics_object" << std::endl;
 
   }
 

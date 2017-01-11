@@ -6,6 +6,7 @@
 #endif
 
 #include <iostream>
+#include <math.h>
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -35,6 +36,10 @@ float mat_shininess[] = {50.0};
 
 float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
 
+point3f camera_position;
+point3f camera_direction;
+float camera_angle_y;
+
 
 unsigned int g_tex_handle_floor;
 unsigned int g_tex_handle_wall;
@@ -44,8 +49,9 @@ void load_and_bind_textures() {
 	// load all textures here
 	//g_tex_handle_floor = load_and_bind_texture("images/floor.png");
 
-	g_tex_handle_wall = load_and_bind_texture("images/ak.png");
+	//g_tex_handle_wall = load_and_bind_texture("images/ak.png");
 	//g_tex_handle_wall = load_and_bind_texture("images/wall.png");
+	g_tex_handle_wall = load_and_bind_texture("images/hellrock.png");
 
 }
 void idle() {
@@ -53,7 +59,17 @@ void idle() {
 	g_spin += 2;
 	glutPostRedisplay();
 }
+void update_camera(){
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
+  glRotatef(angle, 0.0f, 1.0f, 0.0);
+  gluLookAt(camera_position.x, camera_position.y, camera_position.z, // eye position
+        camera_position.x + camera_direction.x, camera_position.y + camera_direction.y, camera_position.z + camera_direction.z, // reference point
+        0.0f, 1.0f, 0.0f  // up vector
+      );
+
+}
 void display() {
   std::cout << "drawing..." << std::endl;
 
@@ -63,16 +79,10 @@ void display() {
 
   // position and orient camera
   //glRotatef(angle, 0.0f, 1.0f, 0.0f);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  gluLookAt(0.0f, 1.5f, -5.0f, // eye position
-        0.0f, 1.5f, 0.0f, // reference point
-        0.0f, 1.0f, 0.0f  // up vector
-      );
+  update_camera();
 
   glPushMatrix();
 
-    glRotatef(angle, 0.0f, 1.0f, 0.0f);
     root->display();
 
   glPopMatrix();
@@ -120,24 +130,29 @@ void keyboard(unsigned char key, int, int) {
 }
 void processSpecialKeys(int key, int xx, int yy) {
 
-	float fraction = 0.1f;
+	float new_x, new_z, old_x, old_z;
 
 	switch (key) {
 		case GLUT_KEY_LEFT :
-			angle -= 2;
-			//lx = sin(angle);
-			//lz = -cos(angle);
+      angle = 15.0f;
+      old_x = camera_direction.x;
+      old_z = camera_direction.z;
+			new_x = old_x * cos(angle) + old_z * cos(angle);
+      new_z = -old_x * sin(angle) + old_z * cos(angle);
+      camera_direction = *new point3f(new_x, camera_direction.y, new_z);
 			break;
 		case GLUT_KEY_RIGHT :
-			angle += 2;
-			//lx = sin(angle);
-			//lz = -cos(angle);
+      angle = -15.0f;
+      old_x = camera_direction.x;
+      old_z = camera_direction.z;
+			new_x = old_x * cos(angle) + old_z * cos(angle);
+      ew_z = -old_x * sin(angle) + old_z * cos(angle);
+      camera_direction = *new point3f(new_x, camera_direction.y, new_z);
 			break;
 		case GLUT_KEY_UP :
-
+      camera_position = *new point3f(camera_position.x + camera_direction.x, camera_position.y + camera_direction.y, camera_position.z + camera_direction.z);
 			break;
 		case GLUT_KEY_DOWN :
-
 			break;
 	}
   glutPostRedisplay();
@@ -146,7 +161,9 @@ void reshape(int w, int h) {
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(40.0, 1.0f, 1.0, 50.0);
+  float ar = w/(float)h;
+  std::cout << ar << std::endl;
+	gluPerspective(40.0, ar, 0.25f, 50.0);
 
 	glutPostRedisplay();
 }
@@ -237,19 +254,22 @@ void prepare_maze(game_object *root) {
     {0,1,1,1,1,1,0},
     {0,0,0,0,0,1,0}};
 
-    point3f scale = new point3f(1.0f, 1.0f, 1.0f);
-    point3f rotation = new point3f(0.0f, 1.0f, 0.0f);
+    point3f scale = *new point3f(1.0f, 1.0f, 1.0f);
+    point3f rotation = *new point3f(0.0f, 1.0f, 0.0f);
 
-    for (float x = 0; x < 2; x++) {
-      for (float y = 0; y < 2; y++) {
-        game_object g = *new game_object();
-        std::cout << &g << std::endl;
-        g.set_position(new point3f(x, 0, y));
-        //g.set_graphics_object(wall);
-        root->add_child(&g);
 
+
+    for (int x = 0; x < 7; x++) {
+      for (int y = 0; y < 7; y++) {
+        if (maze[x][y] == 0) {
+          game_object* g = new game_object(new point3f(x-3, 0.0f, y-3));
+          std::cout << g << std::endl;
+          g->set_graphics_object(wall);
+          root->add_child(g);
+        }
       }
     }
+
 
 }
 void init() {
@@ -281,7 +301,8 @@ void init() {
   prepare_maze(&*root);
   //root->set_graphics_object(prepare_graphics_object(true));
 
-
+  camera_position = *new point3f(0.0f, 1.5f, -5.0f);
+  camera_direction = *new point3f(0.0f, 0.0f, 1.0f);
 
   /*std::vector<point3f> tt_vertices;
   tt_vertices.push_back(*new point3f(-2.0, 0.0, 1.0));
@@ -338,7 +359,7 @@ int main(int argc, char* argv[]) {
 
   glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
 
-	glutInitWindowSize(640, 640);
+	glutInitWindowSize(1600, 900);
 	glutInitWindowPosition(50, 50);
 
 	glutCreateWindow("Maze");
@@ -355,4 +376,11 @@ int main(int argc, char* argv[]) {
 	glutMainLoop();
 
 	return 0;
+}
+
+void normalise (point3f *p) {
+  float magnitude = sqrt(p->x * p->x + p->y * p->y + p->z * p->z);
+  p->x = p->x / magnitude;
+  p->y = p->y / magnitude;
+  p->z = p->z / magnitude;
 }
