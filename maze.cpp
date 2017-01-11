@@ -91,6 +91,7 @@ void display() {
   update_camera();
 
   glPushMatrix();
+    glScalef(3.0f, 1.0f, 3.0f);
 
     root->display();
 
@@ -182,7 +183,7 @@ void reshape(int w, int h) {
 	glLoadIdentity();
   float ar = w/(float)h;
   std::cout << ar << std::endl;
-	gluPerspective(75.0, ar, 0.25f, 50.0);
+	gluPerspective(60.0, ar, 0.25f, 50.0);
 
 	glutPostRedisplay();
 }
