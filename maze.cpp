@@ -16,6 +16,7 @@
 #include "game_object.h"
 #include "graphics_object.h"
 #include "textured_graphics_object.h"
+#include "draw_text.h"
 
 #include <vector>
 #include <memory>
@@ -45,6 +46,12 @@ unsigned int g_tex_handle_floor;
 unsigned int g_tex_handle_wall;
 
 
+void normalise (point3f *p) {
+  float magnitude = sqrt(p->x * p->x + p->y * p->y + p->z * p->z);
+  p->x = p->x / magnitude;
+  p->y = p->y / magnitude;
+  p->z = p->z / magnitude;
+}
 void load_and_bind_textures() {
 	// load all textures here
 	//g_tex_handle_floor = load_and_bind_texture("images/floor.png");
@@ -62,23 +69,25 @@ void idle() {
 void update_camera(){
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
-
-  glRotatef(angle, 0.0f, 1.0f, 0.0);
+  //glRotatef(angle, 0.0f, 1.0f, 0.0f);
   gluLookAt(camera_position.x, camera_position.y, camera_position.z, // eye position
         camera_position.x + camera_direction.x, camera_position.y + camera_direction.y, camera_position.z + camera_direction.z, // reference point
         0.0f, 1.0f, 0.0f  // up vector
       );
 
+
 }
 void display() {
-  std::cout << "drawing..." << std::endl;
+  //std::cout << "drawing..." << std::endl;
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
   //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-  //glColor3f(1.0f, 1.0f, 0.0f);;
+
+  glColor3f(1.0f, 1.0f, 1.0f);;
+
 
   // position and orient camera
-  //glRotatef(angle, 0.0f, 1.0f, 0.0f);
   update_camera();
 
   glPushMatrix();
@@ -86,6 +95,9 @@ void display() {
     root->display();
 
   glPopMatrix();
+
+    draw_text(0, 900, camera_position.to_string());
+    draw_text(0, 850, camera_direction.to_string());
 
   glutSwapBuffers();
 }
@@ -132,32 +144,36 @@ void processSpecialKeys(int key, int xx, int yy) {
 
 	float new_x, new_z, old_x, old_z;
   float speed = 0.5;
+  float angle_inc = 0.1f;
 
 	switch (key) {
 		case GLUT_KEY_LEFT :
-      angle = 0.1f;
-      old_x = camera_direction.x;
-      old_z = camera_direction.z;
-			new_x = old_x * cos(angle) + old_z * cos(angle);
-      new_z = -old_x * sin(angle) + old_z * cos(angle);
-      camera_direction = *new point3f(new_x, camera_direction.y, new_z);
+      angle = -angle_inc;
+      //std:: cout << "Rotating by: " << angle << std::endl;
 			break;
 		case GLUT_KEY_RIGHT :
-      angle = -0.1f;
-      old_x = camera_direction.x;
-      old_z = camera_direction.z;
-			new_x = old_x * cos(angle) + old_z * cos(angle);
-      new_z = -old_x * sin(angle) + old_z * cos(angle);
-      camera_direction = *new point3f(new_x, camera_direction.y, new_z);
-			break;
+      angle = angle_inc;
+      //std:: cout << "Rotating by: " << angle << std::endl;
+      break;
+
 		case GLUT_KEY_UP :
       camera_position = *new point3f(camera_position.x + camera_direction.x * speed,
         camera_position.y + camera_direction.y * speed,
         camera_position.z + camera_direction.z * speed);
 			break;
 		case GLUT_KEY_DOWN :
+      camera_position = *new point3f(camera_position.x + camera_direction.x * -speed,
+        camera_position.y + camera_direction.y * -speed,
+        camera_position.z + camera_direction.z * -speed);
 			break;
 	}
+  old_x = camera_direction.x;
+  old_z = camera_direction.z;
+  new_x = old_x * cos(angle) + old_z * sin(angle);
+  new_z = -old_x * sin(angle) + old_z * cos(angle);
+  camera_direction = *new point3f(new_x, 0, new_z);
+  normalise(&camera_direction);
+
   glutPostRedisplay();
 }
 void reshape(int w, int h) {
@@ -379,11 +395,4 @@ int main(int argc, char* argv[]) {
 	glutMainLoop();
 
 	return 0;
-}
-
-void normalise (point3f *p) {
-  float magnitude = sqrt(p->x * p->x + p->y * p->y + p->z * p->z);
-  p->x = p->x / magnitude;
-  p->y = p->y / magnitude;
-  p->z = p->z / magnitude;
 }

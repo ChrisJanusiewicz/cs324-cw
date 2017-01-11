@@ -89,7 +89,7 @@ public:
       //std::cout << "done" << std::endl;
 
       if (g_object == NULL) {
-        std::cout << "g_object is null" << std::endl;
+        //std::cout << "g_object is null" << std::endl;
       } else {
         //std::cout << "attempting to draw the graphics object of this game_object" << std::endl;
         g_object->display();
