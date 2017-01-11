@@ -145,14 +145,14 @@ void processSpecialKeys(int key, int xx, int yy) {
 	float new_x, new_z, old_x, old_z;
   float speed = 0.5;
   float angle_inc = 0.1f;
-
+  angle = 0.0f;
 	switch (key) {
 		case GLUT_KEY_LEFT :
-      angle = -angle_inc;
+      angle = angle_inc;
       //std:: cout << "Rotating by: " << angle << std::endl;
 			break;
 		case GLUT_KEY_RIGHT :
-      angle = angle_inc;
+      angle = -angle_inc;
       //std:: cout << "Rotating by: " << angle << std::endl;
       break;
 
@@ -182,7 +182,7 @@ void reshape(int w, int h) {
 	glLoadIdentity();
   float ar = w/(float)h;
   std::cout << ar << std::endl;
-	gluPerspective(40.0, ar, 0.25f, 50.0);
+	gluPerspective(75.0, ar, 0.25f, 50.0);
 
 	glutPostRedisplay();
 }
