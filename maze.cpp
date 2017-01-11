@@ -131,10 +131,11 @@ void keyboard(unsigned char key, int, int) {
 void processSpecialKeys(int key, int xx, int yy) {
 
 	float new_x, new_z, old_x, old_z;
+  float speed = 0.5;
 
 	switch (key) {
 		case GLUT_KEY_LEFT :
-      angle = 15.0f;
+      angle = 0.1f;
       old_x = camera_direction.x;
       old_z = camera_direction.z;
 			new_x = old_x * cos(angle) + old_z * cos(angle);
@@ -142,7 +143,7 @@ void processSpecialKeys(int key, int xx, int yy) {
       camera_direction = *new point3f(new_x, camera_direction.y, new_z);
 			break;
 		case GLUT_KEY_RIGHT :
-      angle = -15.0f;
+      angle = -0.1f;
       old_x = camera_direction.x;
       old_z = camera_direction.z;
 			new_x = old_x * cos(angle) + old_z * cos(angle);
@@ -150,7 +151,9 @@ void processSpecialKeys(int key, int xx, int yy) {
       camera_direction = *new point3f(new_x, camera_direction.y, new_z);
 			break;
 		case GLUT_KEY_UP :
-      camera_position = *new point3f(camera_position.x + camera_direction.x, camera_position.y + camera_direction.y, camera_position.z + camera_direction.z);
+      camera_position = *new point3f(camera_position.x + camera_direction.x * speed,
+        camera_position.y + camera_direction.y * speed,
+        camera_position.z + camera_direction.z * speed);
 			break;
 		case GLUT_KEY_DOWN :
 			break;
