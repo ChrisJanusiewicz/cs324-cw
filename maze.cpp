@@ -146,7 +146,7 @@ void processSpecialKeys(int key, int xx, int yy) {
       old_x = camera_direction.x;
       old_z = camera_direction.z;
 			new_x = old_x * cos(angle) + old_z * cos(angle);
-      ew_z = -old_x * sin(angle) + old_z * cos(angle);
+      new_z = -old_x * sin(angle) + old_z * cos(angle);
       camera_direction = *new point3f(new_x, camera_direction.y, new_z);
 			break;
 		case GLUT_KEY_UP :
