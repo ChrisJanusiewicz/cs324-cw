@@ -1,6 +1,8 @@
 #ifndef POINT3F_H
 #define POINT3F_H
 
+#include <cstdio>
+
 struct point3f {
   float x;
   float y;
@@ -18,9 +20,15 @@ struct point3f {
     this->z = z;
   }
 
-/*  std::ostream& operator<<(std::ostream &stream, const point3f &p) {
-    return stream << "{" << x << ", " << y << ", " << z << "}"
-  } */
+  char* to_string() {
+    char str[50];
+    int n = sprintf(str, "{%f, %f, %f}", x, y, z);
+    return str;
+  }
+
+  std::ostream& operator<<(std::ostream &stream) {
+    return stream << "{" << x << ", " << y << ", " << z << "}";
+  }
 
 };
 
