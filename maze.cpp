@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <chrono> // for high_resolution_clock
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -42,6 +43,10 @@ float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
 point3f camera_position;
 point3f camera_direction;
 float camera_angle_y;
+float camera_speed = 1.0f;
+
+//time information
+auto last_time = std::chrono::high_resolution_clock::now();
 
 //mouse information
 
@@ -51,6 +56,7 @@ bool key_down_s;
 bool key_down_d;
 bool key_down_w;
 
+float fps_max = 60.0f;
 
 unsigned int g_tex_handle_floor;
 unsigned int g_tex_handle_wall;
@@ -72,9 +78,18 @@ void load_and_bind_textures() {
 
 }
 void idle() {
-  usleep(15000); // in microseconds
-	g_spin += 2;
-	glutPostRedisplay();
+  auto now = std::chrono::high_resolution_clock::now();
+  auto elapsed = now - last_time;
+  long long microseconds_elapsed =
+    std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+
+    std::cout << microseconds_elapsed << std::endl;
+
+
+    glutPostRedisplay();
+    last_time = now;
+
+  usleep(1000); // in microseconds
 }
 void update_camera(){
   glMatrixMode(GL_MODELVIEW);
@@ -89,6 +104,7 @@ void update_camera(){
 }
 void display() {
   //std::cout << "drawing..." << std::endl;
+
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
@@ -109,44 +125,39 @@ void display() {
 
     draw_text(0, 900, camera_position.to_string());
     draw_text(0, 850, camera_direction.to_string());
+    //draw_text(0, 800, );
 
   glutSwapBuffers();
 }
-
-/*
-// enable texturing
-  glEnable(GL_TEXTURE_2D);
-
-// select which texure to render
-glBindTexture(GL_TEXTURE_2D, g_tex_handle_wall);
-std::cout << "Wall texture handle: " << g_tex_handle_wall << std::endl;
-
-
-// specify texture coordinates
-  glBegin (GL_QUADS);
-    glTexCoord2f (0.0f, 0.0f); // lower left corner
-    glVertex3f(3, 0, 0);
-    glTexCoord2f (320.0f, 0.0f); // lower right corner
-    glVertex3f(3, 3, 0);
-    glTexCoord2f (320, 128); // upper right corner
-    glVertex3f(0, 3, 0);
-    glTexCoord2f (0.0f, 128); // upper left corner
-    glVertex3f(0, 0, 0);
-  glEnd ();
-
-glDisable(GL_TEXTURE_2D);
-*/
+void keyboard_up(unsigned char key, int, int) {
+  switch (key) {
+		case 'w': key_down_w = false; break;
+		case 'a': key_down_a = false; break;
+		case 's': key_down_s = false; break;
+		case 'd': key_down_d = false; break;
+  }
+}
+void keyboard_down(unsigned char key, int, int) {
+  switch (key) {
+    case 'w': key_down_w = true; break;
+    case 'a': key_down_a = true; break;
+    case 's': key_down_s = true; break;
+    case 'd': key_down_d = true; break;
+  }
+}
 void keyboard(unsigned char key, int, int) {
 	switch (key)
 	{
 		case 'q': exit(1); break;
 
 		case ' ':
-				g_spinning = !g_spinning;
+        /*
+      	g_spinning = !g_spinning;
 				if (g_spinning)
 					glutIdleFunc(idle);
 				else
 					glutIdleFunc(NULL);
+        */
 				break;
 	}
 	glutPostRedisplay();
@@ -349,11 +360,14 @@ int main(int argc, char* argv[]) {
 
 	glutCreateWindow("Maze");
 
+  glutIdleFunc(idle);
 
 	glutKeyboardFunc(keyboard);
   glutSpecialFunc(processSpecialKeys);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
+
+
 
 	// get texture ready before we need it
 	init();
