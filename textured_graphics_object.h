@@ -7,6 +7,7 @@
 #include <vector>
 #include "point3f.h"
 #include "point2f.h"
+#include "graphics_object.h"
 
 class textured_graphics_object : public graphics_object {
 public:

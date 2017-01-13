@@ -6,8 +6,9 @@
 #include <stddef.h>
 #include <vector>
 #include "point3f.h"
+#include "game_component.h"
 
-class graphics_object {
+class graphics_object : public game_component {
 public:
 
   graphics_object (std::vector<point3f> *vertices,

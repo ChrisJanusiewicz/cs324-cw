@@ -45,7 +45,7 @@ point3f camera_position;
 point3f camera_direction;
 float camera_angle_y;
 float camera_speed = 3.0f;
-float camera_turning_speed = 90.0f;
+float camera_turning_speed = 1.67f;
 
 //time information
 auto last_time = std::chrono::high_resolution_clock::now();
@@ -91,11 +91,12 @@ void idle() {
     //std::cout << seconds_elapsed << std::endl;
 
     if (key_down_a) {
-        angle += camera_turning_speed * seconds_elapsed;
+        angle = camera_turning_speed * seconds_elapsed;
 
-    }
-    if (key_down_d) {
-        angle -= -camera_turning_speed * seconds_elapsed;
+    } else if (key_down_d) {
+        angle = -camera_turning_speed * seconds_elapsed;
+    } else {
+      angle = 0.0f;
     }
     if (key_down_w) {
       camera_position = *new point3f(camera_position.x + camera_direction.x * camera_speed * seconds_elapsed,
@@ -122,6 +123,8 @@ void update_camera(){
   camera_direction = *new point3f(new_x, 0, new_z);
   normalise(&camera_direction);
 
+
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   //glRotatef(angle, 0.0f, 1.0f, 0.0f);
@@ -129,7 +132,6 @@ void update_camera(){
         camera_position.x + camera_direction.x, camera_position.y + camera_direction.y, camera_position.z + camera_direction.z, // reference point
         0.0f, 1.0f, 0.0f  // up vector
       );
-
 
 }
 void display() {
@@ -309,20 +311,16 @@ void prepare_maze(game_object *root) {
     point3f scale = *new point3f(1.0f, 1.0f, 1.0f);
     point3f rotation = *new point3f(0.0f, 1.0f, 0.0f);
 
-
-
     for (int x = 0; x < 7; x++) {
       for (int y = 0; y < 7; y++) {
         if (maze[x][y] == 0) {
           game_object* g = new game_object(new point3f(3 * x-3, 0.0f, 3 * y-3));
           //std::cout << g << std::endl;
-          g->set_graphics_object(wall);
+          g->set_game_component(wall);
           root->add_child(g);
         }
       }
     }
-
-
 }
 void init() {
 	load_and_bind_textures();

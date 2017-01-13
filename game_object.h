@@ -6,14 +6,10 @@
 #include <stddef.h>
 #include <vector>
 #include "point3f.h"
-#include "graphics_object.h"
+#include "game_component.h"
 
 
 class game_object {
-
-
-  // properties of default material
-
 
 public:
 
@@ -23,7 +19,7 @@ public:
     rotation_axis = *new point3f(0.0f, 1.0f, 0.0f);
     rotation_angle = 0.0f;
     parent = NULL;
-    g_object = NULL;
+    g_component = NULL;
   }
 
   game_object(point3f *position) {
@@ -33,7 +29,7 @@ public:
     rotation_axis = *new point3f(0.0f, 1.0f, 0.0f);
     rotation_angle = 0.0f;
     parent = NULL;
-    g_object = NULL;
+    g_component = NULL;
 
   }
 
@@ -48,7 +44,7 @@ public:
     this->scale = *scale;
     this->parent = parent;
 
-    g_object = NULL;
+    g_component = NULL;
     //children = std::vector<game_object*>();
 
   }
@@ -64,17 +60,9 @@ public:
 
     glPushMatrix();
 
-      //std::cout << "Scaling by: " << scale.x << " " << scale.y << " " << scale.z << std::endl;
-      //std::cout << "Rotating by: " <<rotation_angle << " around:"
-      //<< rotation_axis.x << " "
-      //<< rotation_axis.y << " "
-      //<< rotation_axis.z << std::endl;
-      //std::cout << "Translating by: " << position.x << " " << position.y << " " << position.z << std::endl;
-
       glScalef(scale.x, scale.y, scale.z);
       glRotatef(rotation_angle, rotation_axis.x, rotation_axis.y, rotation_axis.z);
       glTranslatef(position.x, position.y, position.z);
-
 
       //std::cout << "Attempting to iterate through children" << std::endl;
       for (game_object* g : children) {
@@ -88,14 +76,13 @@ public:
 
       //std::cout << "done" << std::endl;
 
-      if (g_object == NULL) {
+      if (g_component == NULL) {
         //std::cout << "g_object is null" << std::endl;
       } else {
         //std::cout << "attempting to draw the graphics object of this game_object" << std::endl;
-        g_object->display();
+        g_component->display();
 
       }
-
 
     glPopMatrix();
 
@@ -107,8 +94,8 @@ public:
 
   }
 
-  void set_graphics_object(graphics_object *g_object) {
-    this->g_object = g_object;
+  void set_game_component(game_component *g_component) {
+    this->g_component = g_component;
   }
 
   game_object* add_child(game_object *child) {
@@ -127,7 +114,7 @@ public:
 private:
   game_object* parent;
   std::vector<game_object*> children;
-  graphics_object* g_object;
+  game_component* g_component;
 
   point3f position;
   point3f scale;
