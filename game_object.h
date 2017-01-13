@@ -113,7 +113,7 @@ public:
 
   game_object* add_child(game_object *child) {
 
-    std::cout << "Adding child to tree" << std::endl;
+    //std::cout << "Adding child to tree" << std::endl;
     children.push_back(child);
     return child;
 

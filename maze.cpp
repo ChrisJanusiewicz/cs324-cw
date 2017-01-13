@@ -37,9 +37,19 @@ float mat_shininess[] = {50.0};
 
 float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
 
+
+//Camera information
 point3f camera_position;
 point3f camera_direction;
 float camera_angle_y;
+
+//mouse information
+
+//keyboard information
+bool key_down_a;
+bool key_down_s;
+bool key_down_d;
+bool key_down_w;
 
 
 unsigned int g_tex_handle_floor;
@@ -91,7 +101,7 @@ void display() {
   update_camera();
 
   glPushMatrix();
-    glScalef(3.0f, 1.0f, 3.0f);
+    //glScalef(1.0f, 1.0f, 1.0f);
 
     root->display();
 
@@ -187,23 +197,21 @@ void reshape(int w, int h) {
 
 	glutPostRedisplay();
 }
-
-
 // Returns textured cuboid
 graphics_object* prepare_graphics_object(bool texture) {
   //prepare test graphical object
   //initialise vector to hold vertex information
   std::vector<point3f> vertices;
   //bottom of wall cuboid
-  vertices.push_back(*new point3f(-0.5f, 0.0f, -0.5f));
-  vertices.push_back(*new point3f(-0.5f, 0.0f, 0.5f));
-  vertices.push_back(*new point3f(0.5f, 0.0f, 0.5f));
-  vertices.push_back(*new point3f(0.5f, 0.0f, -0.5f));
+  vertices.push_back(*new point3f(-1.5f, 0.0f, -1.5f));
+  vertices.push_back(*new point3f(-1.5f, 0.0f, 1.5f));
+  vertices.push_back(*new point3f(1.5f, 0.0f, 1.5f));
+  vertices.push_back(*new point3f(1.5f, 0.0f, -1.5f));
   //top of the wall cuboid
-  vertices.push_back(*new point3f(-0.5f, 2.0f, -0.5f));
-  vertices.push_back(*new point3f(-0.5f, 2.0f, 0.5f));
-  vertices.push_back(*new point3f(0.5f, 2.0f, 0.5f));
-  vertices.push_back(*new point3f(0.5f, 2.0f, -0.5f));
+  vertices.push_back(*new point3f(-1.5f, 2.0f, -1.5f));
+  vertices.push_back(*new point3f(-1.5f, 2.0f, 1.5f));
+  vertices.push_back(*new point3f(1.5f, 2.0f, 1.5f));
+  vertices.push_back(*new point3f(1.5f, 2.0f, -1.5f));
 
 
     std::vector<int> vertex_indices{0, 4, 3, 3, 4, 7,
@@ -282,8 +290,8 @@ void prepare_maze(game_object *root) {
     for (int x = 0; x < 7; x++) {
       for (int y = 0; y < 7; y++) {
         if (maze[x][y] == 0) {
-          game_object* g = new game_object(new point3f(x-3, 0.0f, y-3));
-          std::cout << g << std::endl;
+          game_object* g = new game_object(new point3f(3 * x-3, 0.0f, 3 * y-3));
+          //std::cout << g << std::endl;
           g->set_graphics_object(wall);
           root->add_child(g);
         }
@@ -324,47 +332,6 @@ void init() {
   camera_position = *new point3f(0.0f, 1.5f, -5.0f);
   camera_direction = *new point3f(0.0f, 0.0f, 1.0f);
 
-  /*std::vector<point3f> tt_vertices;
-  tt_vertices.push_back(*new point3f(-2.0, 0.0, 1.0));
-  tt_vertices.push_back(*new point3f(3.0, 0.0, 1.0));
-  tt_vertices.push_back(*new point3f(3.0, 5.0, 1.0));
-  std::vector<point2f> tt_tex_coords;
-  tt_tex_coords.push_back(*new point2f(0.0, 0.0));
-  tt_tex_coords.push_back(*new point2f(1.0, 0.0));
-  tt_tex_coords.push_back(*new point2f(1.0, 1.0));
-  std::vector<int> tt_vertex_indices{0,1,2};
-  std::vector<int> tt_tex_indices{0,1,2};
-
-  textured_graphics_object *tt = new textured_graphics_object(&tt_vertices, &tt_vertex_indices, &tt_tex_coords, &tt_tex_indices, &g_tex_handle_wall);
-  root->set_graphics_object(tt);
-
-  game_object *wall2 = new game_object(new point3f(0.0f, 0.0f, 1.0f),
-    new point3f(1.0f, 1.0f, 1.0f),
-    new point3f(0.0f, 1.0f, 0.0f),
-    45.0f,
-    NULL);
-
-  game_object *wall3 = new game_object(new point3f(-1.0f, 0.0f, 2.0f),
-    new point3f(1.0f, 1.0f, 1.0f),
-    new point3f(0.0f, 1.0f, 0.0f),
-    12.0f,
-    NULL);
-
-  game_object *wallt = new game_object(new point3f(-1.0f, 0.0f, 4.0f),
-    new point3f(1.0f, 1.0f, 1.0f),
-    new point3f(0.0f, 1.0f, 0.0f),
-    12.0f,
-    NULL);
-
-  wall2->set_graphics_object(t_object);
-  //root->add_child(wall2);
-  wall3->set_graphics_object(t_object);
-  //root->add_child(wall3);
-  wallt->set_graphics_object(t_object);
-  //root->add_child(wallt);
-
-  */
-
 	GLenum error = glGetError();
 	if (error!=GL_NO_ERROR) {
 		fprintf(stderr, "GL error %s\n", gluErrorString(error));
@@ -372,14 +339,12 @@ void init() {
 
 	glEnable(GL_DEPTH_TEST);
 }
-
-
 int main(int argc, char* argv[]) {
 	glutInit(&argc, argv);
 
   glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
 
-	glutInitWindowSize(1600, 900);
+	glutInitWindowSize(1280, 720);
 	glutInitWindowPosition(50, 50);
 
 	glutCreateWindow("Maze");
