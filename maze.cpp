@@ -9,6 +9,7 @@
 #include <math.h>
 #include <chrono> // for high_resolution_clock
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <unistd.h> // for usleep
@@ -43,7 +44,8 @@ float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
 point3f camera_position;
 point3f camera_direction;
 float camera_angle_y;
-float camera_speed = 1.0f;
+float camera_speed = 3.0f;
+float camera_turning_speed = 90.0f;
 
 //time information
 auto last_time = std::chrono::high_resolution_clock::now();
@@ -83,8 +85,28 @@ void idle() {
   long long microseconds_elapsed =
     std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    std::cout << microseconds_elapsed << std::endl;
+    //std::cout << microseconds_elapsed << std::endl;
 
+    float seconds_elapsed = microseconds_elapsed / 1000000.0f;
+    //std::cout << seconds_elapsed << std::endl;
+
+    if (key_down_a) {
+        angle += camera_turning_speed * seconds_elapsed;
+
+    }
+    if (key_down_d) {
+        angle -= -camera_turning_speed * seconds_elapsed;
+    }
+    if (key_down_w) {
+      camera_position = *new point3f(camera_position.x + camera_direction.x * camera_speed * seconds_elapsed,
+      camera_position.y + camera_direction.y * camera_speed * seconds_elapsed,
+      camera_position.z + camera_direction.z * camera_speed * seconds_elapsed);
+    }
+    if (key_down_s) {
+      camera_position = *new point3f(camera_position.x + camera_direction.x * -camera_speed * seconds_elapsed,
+      camera_position.y + camera_direction.y * -camera_speed * seconds_elapsed,
+      camera_position.z + camera_direction.z * -camera_speed * seconds_elapsed);
+    }
 
     glutPostRedisplay();
     last_time = now;
@@ -92,6 +114,14 @@ void idle() {
   usleep(1000); // in microseconds
 }
 void update_camera(){
+  float old_x, old_z, new_x, new_z;
+  old_x = camera_direction.x;
+  old_z = camera_direction.z;
+  new_x = old_x * cos(angle) + old_z * sin(angle);
+  new_z = -old_x * sin(angle) + old_z * cos(angle);
+  camera_direction = *new point3f(new_x, 0, new_z);
+  normalise(&camera_direction);
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   //glRotatef(angle, 0.0f, 1.0f, 0.0f);
@@ -144,23 +174,6 @@ void keyboard_down(unsigned char key, int, int) {
     case 's': key_down_s = true; break;
     case 'd': key_down_d = true; break;
   }
-}
-void keyboard(unsigned char key, int, int) {
-	switch (key)
-	{
-		case 'q': exit(1); break;
-
-		case ' ':
-        /*
-      	g_spinning = !g_spinning;
-				if (g_spinning)
-					glutIdleFunc(idle);
-				else
-					glutIdleFunc(NULL);
-        */
-				break;
-	}
-	glutPostRedisplay();
 }
 void processSpecialKeys(int key, int xx, int yy) {
 
@@ -362,7 +375,8 @@ int main(int argc, char* argv[]) {
 
   glutIdleFunc(idle);
 
-	glutKeyboardFunc(keyboard);
+	glutKeyboardFunc(keyboard_down);
+	glutKeyboardUpFunc(keyboard_up);
   glutSpecialFunc(processSpecialKeys);
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
