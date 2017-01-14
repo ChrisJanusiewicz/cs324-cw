@@ -38,7 +38,7 @@ float mat_specular[] = {1.0, 1.0, 1.0, 1.0};
 float mat_shininess[] = {50.0};
 
 float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
-
+int current_light = 1;
 
 //Camera information
 point3f camera_position;
@@ -155,8 +155,9 @@ void display() {
 
   glPopMatrix();
 
-    draw_text(0, 900, camera_position.to_string());
-    draw_text(0, 850, camera_direction.to_string());
+    char buffer[50];
+    draw_text(0, 900, camera_position.to_string(buffer));
+    draw_text(0, 850, camera_direction.to_string(buffer));
     //draw_text(0, 800, );
 
   glutSwapBuffers();
@@ -325,21 +326,16 @@ void prepare_maze(game_object *root) {
 void init() {
 	load_and_bind_textures();
 
-  /*
-  //float light_ambient[] = {0.1, 0.1, 0.1, 1.0};
-  //float light_diffuse[] = {0.8, 0.8, 0.8, 1.0};
-  //glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-  //glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-
-  //glShadeModel(GL_SMOOTH);
-
-  // fix the light position
-  //glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-
   // enable lighting and turn on the light0
-  //glEnable(GL_LIGHTING);
-  //glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHTING);
 
+  float light_ambient[] = {0.1, 0.1, 0.1, 1.0};
+  glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+  glEnable(GL_LIGHT0);
+
+  glShadeModel(GL_SMOOTH);
+
+  /*
   //glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
   //glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
   //glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
@@ -379,9 +375,6 @@ int main(int argc, char* argv[]) {
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 
-
-
-	// get texture ready before we need it
 	init();
 
 	glutMainLoop();

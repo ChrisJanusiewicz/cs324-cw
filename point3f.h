@@ -20,10 +20,9 @@ struct point3f {
     this->z = z;
   }
 
-  char* to_string() {
-    char str[50];
-    int n = sprintf(str, "{%f, %f, %f}", x, y, z);
-    return str;
+  char* to_string(char *ret) {
+    int n = sprintf(ret, "{%f, %f, %f}", x, y, z);
+    return ret;
   }
 
   std::ostream& operator<<(std::ostream &stream) {
