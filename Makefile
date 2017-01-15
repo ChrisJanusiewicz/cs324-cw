@@ -1,15 +1,22 @@
 LIBDIRS= -L/usr/X11R6/lib
 LDLIBS = -lglut -lGL -lGLU -lX11 -lm -lpng
 
-CPPFLAGS= -O3
-LDFLAGS= $(CPPFLAGS) $(LIBDIRS)
+#Extra flags to give to the C PreProcessor, specify #include directories
+CPPFLAGS=# -O3
 
-TARGETS =
+#Extra flags to give to compilers when they are supposed to invoke the linker, ‘ld’, such as -L.
+#Libraries (-lfoo) should be added to the LDLIBS variableinstead.
+LDFLAGS = $(CPPFLAGS) $(LIBDIRS)
 
-SRCS =
+TARGETS = maze game_object
+
+SRCS = *.cpp
 
 OBJS =  $(SRCS:.cpp=.o)
 
-CXX = g++ -std=c++11
+#-Wall	include all compiler warnings
+#
+#
+CXX = g++ -std=c++11 -o -c #-Wall
 
-default: $(TARGETS)
+$(TARGETS) : $(SRCS)
