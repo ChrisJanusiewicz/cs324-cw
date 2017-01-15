@@ -20,6 +20,10 @@ struct point3f {
     this->z = z;
   }
 
+  point3f operator-(const point3f& b) {
+    return *new point3f(this->x - b.x, this->y - b.y, this->z - b.z);
+  }
+
   char* to_string(char *ret) {
     int n = sprintf(ret, "{%f, %f, %f}", x, y, z);
     return ret;
@@ -30,5 +34,13 @@ struct point3f {
   }
 
 };
+
+void normalise (point3f *p) {
+  float magnitude = sqrt(p->x * p->x + p->y * p->y + p->z * p->z);
+  p->x = p->x / magnitude;
+  p->y = p->y / magnitude;
+  p->z = p->z / magnitude;
+}
+
 
 #endif

@@ -9,6 +9,9 @@
 #include <math.h>
 #include <chrono> // for high_resolution_clock
 
+#include <vector>
+#include <memory>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -21,8 +24,6 @@
 #include "light_object.h"
 #include "draw_text.h"
 
-#include <vector>
-#include <memory>
 
 
 bool g_spinning = false;
@@ -45,7 +46,7 @@ float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
 point3f camera_position;
 point3f camera_direction;
 float camera_angle_y;
-float camera_speed = 3.0f;
+float camera_speed = 10.0f;
 float camera_turning_speed = 1.67f;
 
 //time information
@@ -65,12 +66,8 @@ unsigned int g_tex_handle_floor;
 unsigned int g_tex_handle_wall;
 
 
-void normalise (point3f *p) {
-  float magnitude = sqrt(p->x * p->x + p->y * p->y + p->z * p->z);
-  p->x = p->x / magnitude;
-  p->y = p->y / magnitude;
-  p->z = p->z / magnitude;
-}
+
+
 void load_and_bind_textures() {
 	// load all textures here
 	//g_tex_handle_floor = load_and_bind_texture("images/floor.png");
@@ -125,9 +122,6 @@ void update_camera(){
   normalise(&camera_direction);
 
 
-
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
   //glRotatef(angle, 0.0f, 1.0f, 0.0f);
   gluLookAt(camera_position.x, camera_position.y, camera_position.z, // eye position
         camera_position.x + camera_direction.x, camera_position.y + camera_direction.y, camera_position.z + camera_direction.z, // reference point
@@ -136,18 +130,24 @@ void update_camera(){
 
 }
 void display() {
-  //std::cout << "drawing..." << std::endl;
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glColor3f(1,1,1);
 
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-  glColor3f(1.0f, 1.0f, 1.0f);;
 
   // position and orient camera
   update_camera();
-    //glScalef(1.0f, 1.0f, 1.0f);
 
+  //glEnable(GL_LIGHTING);
+
+  glutSolidTeapot(2.0f);
+
+  //std::cout << "Displaying root object..." << std::endl;
   root->display();
+
+
+
 
 
   char buffer[50];
@@ -219,8 +219,9 @@ void reshape(int w, int h) {
 
 	glutPostRedisplay();
 }
-// Returns textured cuboid
 graphics_object* prepare_graphics_object(bool texture) {
+  // Returns textured cuboid
+
   //prepare test graphical object
   //initialise vector to hold vertex information
   std::vector<point3f> vertices;
@@ -311,16 +312,32 @@ void prepare_maze(game_object *root) {
       for (int y = 0; y < 7; y++) {
         if (maze[x][y] == 0) {
           game_object* g = new game_object(new point3f(3 * x-3, 0.0f, 3 * y-3));
-          //std::cout << g << std::endl;
           g->set_game_component(wall);
           root->add_child(g);
         }
       }
     }
+    game_object* sun_container_object = new game_object(new point3f(0.0f, 10.0f, 0.0f));
+    game_object* sun_object = new game_object(new point3f(0.0f, 0.0f, 0.0f));
 
-    game_object* sun_object = new game_object(new point3f(0.0f, 10.0f, 0.0f));
-    sun_object->set_game_component(new light_object());
-    root->add_child(sun_object);
+    light_t light_2 = {
+      GL_LIGHT1,
+      {0.4f, 0.1f, 0.0f, 1.0f},
+      {0.0f, 1.0f, 0.0f, 1.0f},
+      {0.0f, 0.0f, 1.0f, 1.0f},
+      {-0.5f, 0.75f, -2.0f, 1.0f}
+    };
+
+
+    sun_container_object->set_game_component(wall);
+    sun_container_object->add_child(sun_object);
+    sun_object->set_game_component(new light_object(light_2));
+    //std::cout << l << std::endl;
+
+    //game_object* g = new game_object();
+    //g->set_game_component(wall);
+    //root->add_child(g);
+    root->add_child(sun_container_object);
 
 }
 void init() {
@@ -328,10 +345,25 @@ void init() {
 
   // enable lighting and turn on the light0
   glEnable(GL_LIGHTING);
-
+  glEnable(GL_COLOR_MATERIAL);
+  glMatrixMode(GL_MODELVIEW);
   float light_ambient[] = {0.1, 0.1, 0.1, 1.0};
+  float light_diffuse[] = {0, 0, 0, 1.0};
+  float light_position[] = {0, 1.0, -20.0, 0.0};
+  float light_direction[] = {0.0, 0.0, 1.0, 1.0};
   glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+  //glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_diffuse);
+  //glLightfv(GL_LIGHT0, GL_POSITION, light_position);
   glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHT1);
+
+
+  //glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse);
+  //glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION , 0.5f );
+  //glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION , light_direction );
+  //glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 15.f);
+  //glEnable(GL_LIGHT2);
 
   glShadeModel(GL_SMOOTH);
 
@@ -345,9 +377,10 @@ void init() {
   root.reset(new game_object());
 
   prepare_maze(&*root);
-  //root->set_graphics_object(prepare_graphics_object(true));
 
-  camera_position = *new point3f(0.0f, 1.5f, -5.0f);
+
+
+  camera_position = *new point3f(0.0f, 3.5f, -5.0f);
   camera_direction = *new point3f(0.0f, 0.0f, 1.0f);
 
 	GLenum error = glGetError();

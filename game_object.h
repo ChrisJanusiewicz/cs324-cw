@@ -45,17 +45,19 @@ public:
   }
   void display() {
     glPushMatrix();
+      //std::cout << "Displaying game_object" << std::endl;
 
       glScalef(scale.x, scale.y, scale.z);
       glRotatef(rotation_angle, rotation_axis.x, rotation_axis.y, rotation_axis.z);
       glTranslatef(position.x, position.y, position.z);
 
       //std::cout << "Attempting to iterate through children" << std::endl;
+      //std::cout << "number of children: " << children.size() << std::endl;
       for (game_object* g : children) {
         if (g == NULL) {
           std::cout << "null child" << std::endl;
         } else {
-          //std::cout << g << std::endl;
+          //std::cout << "displaying child " << g << std::endl;
           g->display();
         }
       }
@@ -74,10 +76,11 @@ public:
     //std::cout << "Finished displaying game_object" << std::endl;
   }
   void set_game_component(game_component *g_component) {
+    std::cout << "Setting game_component of object" << std::endl;
     this->g_component = g_component;
   }
   game_object* add_child(game_object *child) {
-    //std::cout << "Adding child to tree" << std::endl;
+    std::cout << "Adding child to tree" << std::endl;
     children.push_back(child);
     return child;
   }

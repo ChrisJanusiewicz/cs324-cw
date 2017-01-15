@@ -11,7 +11,9 @@ class game_component {
 public:
   game_component () {}
   virtual void update() {}
-  virtual void display() {}
+  virtual void display() {
+    //std::cout << "running base update() of game_component" << std::endl;
+  }
 private:
 };
 
