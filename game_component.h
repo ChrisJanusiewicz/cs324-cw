@@ -12,6 +12,7 @@ public:
   game_component () {}
   virtual void update() {}
   virtual void display() {}
+private:
 };
 
 #endif

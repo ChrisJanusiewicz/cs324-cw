@@ -18,10 +18,12 @@
 #include "game_object.h"
 #include "graphics_object.h"
 #include "textured_graphics_object.h"
+#include "light_object.h"
 #include "draw_text.h"
 
 #include <vector>
 #include <memory>
+
 
 bool g_spinning = false;
 int g_spin = 0;
@@ -38,7 +40,6 @@ float mat_specular[] = {1.0, 1.0, 1.0, 1.0};
 float mat_shininess[] = {50.0};
 
 float light_position[] = {0.0f, 5.0f, 0.0f, 1.0f};
-int current_light = 1;
 
 //Camera information
 point3f camera_position;
@@ -137,28 +138,22 @@ void update_camera(){
 void display() {
   //std::cout << "drawing..." << std::endl;
 
-
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
   //glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
   glColor3f(1.0f, 1.0f, 1.0f);;
 
-
   // position and orient camera
   update_camera();
-
-  glPushMatrix();
     //glScalef(1.0f, 1.0f, 1.0f);
 
-    root->display();
+  root->display();
 
-  glPopMatrix();
 
-    char buffer[50];
-    draw_text(0, 900, camera_position.to_string(buffer));
-    draw_text(0, 850, camera_direction.to_string(buffer));
-    //draw_text(0, 800, );
+  char buffer[50];
+  draw_text(0, 900, camera_position.to_string(buffer));
+  draw_text(0, 850, camera_direction.to_string(buffer));
+  //draw_text(0, 800, );
 
   glutSwapBuffers();
 }
@@ -322,6 +317,11 @@ void prepare_maze(game_object *root) {
         }
       }
     }
+
+    game_object* sun_object = new game_object(new point3f(0.0f, 10.0f, 0.0f));
+    sun_object->set_game_component(new light_object());
+    root->add_child(sun_object);
+
 }
 void init() {
 	load_and_bind_textures();

@@ -8,11 +8,8 @@
 #include "point3f.h"
 #include "game_component.h"
 
-
 class game_object {
-
 public:
-
   game_object() {
     position = *new point3f();
     scale = *new point3f(1.0f, 1.0f, 1.0f);
@@ -21,18 +18,14 @@ public:
     parent = NULL;
     g_component = NULL;
   }
-
   game_object(point3f *position) {
-
     this->position = *position;
     scale = *new point3f(1.0f, 1.0f, 1.0f);
     rotation_axis = *new point3f(0.0f, 1.0f, 0.0f);
     rotation_angle = 0.0f;
     parent = NULL;
     g_component = NULL;
-
   }
-
   game_object(point3f *position,
     point3f *scale,
     point3f *rotation_axis,
@@ -46,18 +39,11 @@ public:
 
     g_component = NULL;
     //children = std::vector<game_object*>();
-
   }
-
   void set_position(point3f *position) {
     this-> position = *position;
-
   }
-
-
   void display() {
-    //std::cout << "Attempting to display game_object" << std::endl;
-
     glPushMatrix();
 
       glScalef(scale.x, scale.y, scale.z);
@@ -83,33 +69,45 @@ public:
         g_component->display();
 
       }
-
     glPopMatrix();
 
     //std::cout << "Finished displaying game_object" << std::endl;
   }
-
-  void update(int t) {
-
-
-  }
-
   void set_game_component(game_component *g_component) {
     this->g_component = g_component;
   }
-
   game_object* add_child(game_object *child) {
-
     //std::cout << "Adding child to tree" << std::endl;
     children.push_back(child);
     return child;
-
   }
-
   void set_parent(game_object *parent) {
     this-> parent = parent;
   }
+private:
+    game_object* parent;
+    std::vector<game_object*> children;
+    game_component* g_component;
 
+    point3f position;
+    point3f scale;
+    point3f rotation_axis;
+    float rotation_angle;
+};
+
+/* header file
+class game_object {
+
+public:
+  game_object() {};
+  game_object(point3f *position) {};
+  game_object(point3f *position, point3f *scale, point3f *rotation_axis, float rotation_angle, game_object *parent) {};
+  void set_position(point3f *position) {};
+  void display() {};
+  void update(int t) {};
+  void set_game_component(game_component *g_component) {};
+  game_object* add_child(game_object *child) {};
+  void set_parent(game_object *parent) {};
 
 private:
   game_object* parent;
@@ -122,4 +120,5 @@ private:
   float rotation_angle;
 
 };
+*/
 #endif
