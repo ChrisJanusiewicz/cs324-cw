@@ -23,6 +23,12 @@ struct point3f {
   point3f operator-(const point3f& b) {
     return *new point3f(this->x - b.x, this->y - b.y, this->z - b.z);
   }
+  point3f operator+(const point3f& b) {
+    return *new point3f(this->x + b.x, this->y + b.y, this->z + b.z);
+  }
+  point3f operator*(const float f) {
+    return *new point3f(this->x * f, this->y * f, this->z * f);
+  }
 
   char* to_string(char *ret) {
     int n = sprintf(ret, "{%f, %f, %f}", x, y, z);

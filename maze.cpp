@@ -88,9 +88,9 @@ void idle() {
     float seconds_elapsed = microseconds_elapsed / 1000000.0f;
     //std::cout << seconds_elapsed << std::endl;
 
+    //UPDATE CAMERA
     if (key_down_a) {
         angle = camera_turning_speed * seconds_elapsed;
-
     } else if (key_down_d) {
         angle = -camera_turning_speed * seconds_elapsed;
     } else {
@@ -106,6 +106,10 @@ void idle() {
       camera_position.y + camera_direction.y * -camera_speed * seconds_elapsed,
       camera_position.z + camera_direction.z * -camera_speed * seconds_elapsed);
     }
+
+    //UPDATE OBJECT tree
+    root->update(seconds_elapsed);
+
 
     glutPostRedisplay();
     last_time = now;
@@ -322,8 +326,8 @@ void prepare_maze(game_object *root) {
 
     light_t light_2 = {
       GL_LIGHT1,
-      {0.4f, 0.1f, 0.0f, 1.0f},
-      {0.0f, 1.0f, 0.0f, 1.0f},
+      {0, 0, 0.0f, 1.0f},
+      {1, 0.0f, 0.0f, 1.0f},
       {0.0f, 0.0f, 1.0f, 1.0f},
       {-0.5f, 0.75f, -2.0f, 1.0f}
     };
@@ -333,7 +337,7 @@ void prepare_maze(game_object *root) {
     sun_container_object->add_child(sun_object);
     sun_object->set_game_component(new light_object(light_2));
     //std::cout << l << std::endl;
-
+    sun_container_object->set_velocity(new point3f(0, -1, 0));
     //game_object* g = new game_object();
     //g->set_game_component(wall);
     //root->add_child(g);
@@ -380,7 +384,7 @@ void init() {
 
 
 
-  camera_position = *new point3f(0.0f, 3.5f, -5.0f);
+  camera_position = *new point3f(0.0f, 1.5f, -5.0f);
   camera_direction = *new point3f(0.0f, 0.0f, 1.0f);
 
 	GLenum error = glGetError();

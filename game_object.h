@@ -14,6 +14,7 @@ public:
     position = *new point3f();
     scale = *new point3f(1.0f, 1.0f, 1.0f);
     rotation_axis = *new point3f(0.0f, 1.0f, 0.0f);
+    velocity = *new point3f();
     rotation_angle = 0.0f;
     parent = NULL;
     g_component = NULL;
@@ -42,6 +43,20 @@ public:
   }
   void set_position(point3f *position) {
     this-> position = *position;
+  }
+  void set_velocity(point3f *velocity) {
+    this-> velocity = *velocity;
+  }
+  void update(float time) {
+    this->position = this->position + (this->velocity * time);
+    for (game_object* g : children) {
+      if (g == NULL) {
+        std::cout << "null child" << std::endl;
+      } else {
+        //std::cout << "displaying child " << g << std::endl;
+        g->update(time);
+      }
+    }
   }
   void display() {
     glPushMatrix();
@@ -95,6 +110,7 @@ private:
     point3f position;
     point3f scale;
     point3f rotation_axis;
+    point3f velocity;
     float rotation_angle;
 };
 

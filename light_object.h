@@ -49,6 +49,7 @@ public:
     glLightfv(light.name, GL_DIFFUSE, light.diffuse);
     glLightfv(light.name, GL_SPECULAR, light.specular);
     glLightfv(light.name, GL_POSITION, light.position);
+    glLightf(light.name, GL_QUADRATIC_ATTENUATION, 0.1);
 
     /*
     std::cout << light->position[0] << " "
