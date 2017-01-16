@@ -12,57 +12,57 @@
 class graphics_object : public game_component {
 public:
 
-  graphics_object (std::vector<point3f> *vertices,
-    std::vector<int> *vertex_indices,
-    int color) {
+    graphics_object (std::vector<point3f> *vertices,
+                     std::vector<int> *vertex_indices,
+                     int color) {
 
-      this->vertices = *vertices;
-      this->vertex_indices = *vertex_indices;
-      this->color = color;
+        this->vertices = *vertices;
+        this->vertex_indices = *vertex_indices;
+        this->color = color;
 
-      calc_normals();
+        calc_normals();
 
-  }
-  virtual void display() {
+    }
+    virtual void display() {
 
-    glColor3f(0.3,0.2,0.1);
-    glBegin(GL_TRIANGLES);
-      for (int i : vertex_indices) {
-        glNormal3f(vertex_normals[i].x, vertex_normals[i].y, vertex_normals[i].z);
-        glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
-      }
-    glEnd();
-    glColor3f(1,1,1);
+        glColor3f(0.3,0.2,0.1);
+        glBegin(GL_TRIANGLES);
+        for (int i : vertex_indices) {
+            glNormal3f(vertex_normals[i].x, vertex_normals[i].y, vertex_normals[i].z);
+            glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
+        }
+        glEnd();
+        glColor3f(1,1,1);
 
-  }
-  void calc_normals() {
-    //std::cout << "starting to calculate normals" << std::endl;
-    point3f *result = new point3f();
-    int i = 0;
-    while (i < vertex_indices.size()) {
-      point3f v1 = vertices[vertex_indices[i]];
-      point3f v2 = vertices[vertex_indices[i + 1]];
-      point3f v3 = vertices[vertex_indices[i + 2]];
-      vertex_normals.push_back(*new point3f(0.0f, 1.0f, 0.0f));
-      vertex_normals.push_back(*new point3f(0.0f, 1.0f, 0.0f));
-      vertex_normals.push_back(*new point3f(0.0f, 1.0f, 0.0f));
-      i += 3;
+    }
+    void calc_normals() {
+        //std::cout << "starting to calculate normals" << std::endl;
+        point3f *result = new point3f();
+        int i = 0;
+        while (i < vertex_indices.size()) {
+            point3f v1 = vertices[vertex_indices[i]];
+            point3f v2 = vertices[vertex_indices[i + 1]];
+            point3f v3 = vertices[vertex_indices[i + 2]];
+            vertex_normals.push_back(*new point3f(0.0f, 1.0f, 0.0f));
+            vertex_normals.push_back(*new point3f(0.0f, 1.0f, 0.0f));
+            vertex_normals.push_back(*new point3f(0.0f, 1.0f, 0.0f));
+            i += 3;
+        }
+
+        //std::cout << vertex_normals.size() << std::endl;
+        //std::cout << "Done calculating normals" << std::endl;
     }
 
-    //std::cout << vertex_normals.size() << std::endl;
-    //std::cout << "Done calculating normals" << std::endl;
-  }
-
 private:
-  //Vertex list
-  std::vector<point3f> vertices;
-  //Vertex indices corresponding to triangles making up the model:
-  //First triangle - (vertices[0], vertices[1], vertices[2]), etc
-  std::vector<int> vertex_indices;
-  //vertex normal list
-  std::vector<point3f> vertex_normals;
-  //Color, later switch to material
-  unsigned int color;
+    //Vertex list
+    std::vector<point3f> vertices;
+    //Vertex indices corresponding to triangles making up the model:
+    //First triangle - (vertices[0], vertices[1], vertices[2]), etc
+    std::vector<int> vertex_indices;
+    //vertex normal list
+    std::vector<point3f> vertex_normals;
+    //Color, later switch to material
+    unsigned int color;
 };
 
 #endif

@@ -4,9 +4,9 @@
 #include <stdlib.h>
 
 int png_load(const char* file_name,
-		     int* width,
-			 int* height,
-			 char** image_data_ptr)
+             int* width,
+             int* height,
+             char** image_data_ptr)
 {
     png_byte header[8];
 
@@ -18,7 +18,7 @@ int png_load(const char* file_name,
         return 0;
     }
 
-		size_t read_result;
+    size_t read_result;
     // read the header
     read_result = fread(header, 1, 8, fp);
 
@@ -80,10 +80,14 @@ int png_load(const char* file_name,
 
     // get info about png
     png_get_IHDR(png_ptr, info_ptr, &temp_width, &temp_height, &bit_depth, &color_type,
-        NULL, NULL, NULL);
+                 NULL, NULL, NULL);
 
-    if (width) { *width = temp_width; }
-    if (height){ *height = temp_height; }
+    if (width) {
+        *width = temp_width;
+    }
+    if (height) {
+        *height = temp_height;
+    }
 
     // Update the png info struct.
     png_read_update_info(png_ptr, info_ptr);
@@ -130,14 +134,14 @@ int png_load(const char* file_name,
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 
     //free(image_data);
-	*image_data_ptr = (char*)image_data; // return data pointer
+    *image_data_ptr = (char*)image_data; // return data pointer
 
     free(row_pointers);
     fclose(fp);
 
-	fprintf(stderr, "\t texture image size is %d x %d\n", *width, *height);
+    fprintf(stderr, "\t texture image size is %d x %d\n", *width, *height);
 
-	return 1;
+    return 1;
 }
 
 #endif
