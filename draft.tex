@@ -2,6 +2,7 @@
 \usepackage{listings}
 \usepackage{textcomp}
 \usepackage{courier}
+\usepackage{graphicx}
 
 
 %hyphenation rules
@@ -9,13 +10,10 @@
 
 \title{CS324 Coursework Assignment}
 \date{\today}
-\author{Krzysztof Janusiewicz}
+\author{University id: 1420684}
 
 \begin{document}
 	\maketitle
-	\newpage
-	\section{Introduction}
-
 	\newpage
 	\section{Compiling, Running and Using the Program}
 	\subsection{Compiling}
@@ -32,6 +30,8 @@ Once the program has been appropriately compiled using the makefile, it can be r
 
 	\subsection{Using the Program}
 	To turn the camera left and right, use the 'a' and 'd' keys respectively. To move forward and backward, use the 'w' and 's' keys.
+	\par
+	The player starts in the middle of the maze. The objective is to exit the maze without crossing through any walls (collision detection has not been implemented).
 	
 	\newpage
 	\section{Design}
@@ -57,20 +57,25 @@ Once the program has been appropriately compiled using the makefile, it can be r
 	These are instances of the \texttt{game\_object} class, and their graphical components are set to an instance of the \texttt{textured\_graphics\_component} class.
 	The maze also has ceiling and floor objects. These are all textured, and the appropriate textures are loaded into the program with the code used in the lab sessions. The textures are themselves located in the \texttt{./images/} directory.
 	\par
-	The maze is lit up using a number of lights. The first light moves with the camera; its position is updated to the position of the camera each display cycle. If a \texttt{camera\_object} was implemented, it would have been possible to make a light follow the camera much more simply; the camera object and a light could both be set as graphics components of a single instance of \texttt{game\_object}.
+	The maze is lit up using a light that moves with the camera; its position is updated to the position of the camera each display cycle. If a \texttt{camera\_object} was implemented, it would have been possible to make a light follow the camera much more simply; the camera object and a light could both be set as graphics components of a single instance of \texttt{game\_object}.
 	\par
-	A number of instances of \texttt{light\_object} are also placed around the maze with different positions, by being set as the graphical component of some instance of the \texttt{game\_object} class. These are used in conjunction with a 3D torch model for aesthetic purposes.
+	A number of 3D torch models have also been placed around the maze. Had the \texttt{light\_object} class been implemented, lights could easily be attached to these to make for realistic looking light sources.
+	\begin{figure}[h]
+	\includegraphics[width=\linewidth]{torch}
+	\caption{One of the torches inside the maze.}
+	\end{figure}
+
 	
-	\subsection{List of OpenGL Features Used}
+	\subsection{Main OpenGL Features Used}
     \begin{itemize}
     	\item
-    	Textures
+    	Textures    	
     	\item
-    	Lighting
+    	Solid-Fill
+    	\item
+    	Lighting (Ambient and Diffuse)
     	\item
     	Perspective Projection
-    	\item
-    	Orthographic Projection
-    	
     \end{itemize}
+	
 \end{document}

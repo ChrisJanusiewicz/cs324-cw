@@ -1,7 +1,7 @@
 #ifndef GAME_COMPONENT_H
 #define GAME_COMPONENT_H
 
-//Class will contain graphics objects without textures
+//Class can be extended by others such as graphics_component, camera_object,
 #include <stdlib.h>
 #include <stddef.h>
 #include <vector>
