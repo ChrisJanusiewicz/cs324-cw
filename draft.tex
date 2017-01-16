@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{courier}
+
+
+%hyphenation rules
+%\hyphenation{textured-graphics-object}
+
+\title{CS324 Coursework Assignment}
+\date{\today}
+\author{Krzysztof Janusiewicz}
+
+\begin{document}
+	\maketitle
+	\newpage
+	\section{Introduction}
+
+	\newpage
+	\section{Compiling, Running and Using the Program}
+	\subsection{Compiling}
+	In order to compile the program on Linux, simply navigate to the main directory and use the makefile by running:
+\begin{lstlisting}
+	make
+\end{lstlisting}
+
+	\subsection{Running}
+Once the program has been appropriately compiled using the makefile, it can be run using:
+\begin{lstlisting}
+	./maze
+\end{lstlisting}
+
+	\subsection{Using the Program}
+	To turn the camera left and right, use the 'a' and 'd' keys respectively. To move forward and backward, use the 'w' and 's' keys.
+	
+	\newpage
+	\section{Design}
+	\subsection{Tree Structure and Recursive Functions}
+	A tree-like system of objects of the class \texttt{game\_object} has been used to represent the graphical elements of the maze.
+	Each instance of the \texttt{game\_object} class has a pointer to its parent, and an \texttt{std::vector$\langle$game\_object$\rangle$} containing its children, as well as physical information such as position, rotation and scale.
+	\par
+	Whenever some amount of time passes and objects need to be updated in regards to their position, velocity and other such qualities, the \texttt{update()} method can be called on the root \texttt{game\_object}.
+	This will then recursively update each of its children, and the same will happen for other methods such as \texttt{display()}.
+	\subsection{Graphical Component Inheritance}
+	Each instance of \texttt{game\_object} also has a \texttt{game\_component} member field.
+	This class is inherited by multiple others, namely \texttt{graphics\_object}, \texttt{textured\_graphics\_object} and \texttt{light\_object}.
+	The nature of the inheritance means that each \texttt{game\_object} within the tree can have a light, 3D model or the camera attached to it.
+	\par
+	In the future, the implementation could be extended to include a camera\_object, which would allow for the camera to move together with other objects and graphical components such as 3D models and lights.
+	In addition, \texttt{game\_object} could have its \texttt{game\_component} member changed to a \texttt{std::vector$\langle$game\_component$\rangle$} for ease of adding multiple components to one object.
+	
+	\newpage
+	\section{Features of the Program}
+	A number of graphical features have been implemented. Objects can be easily moved in 3D space because of the tree-like implementation, however no physics features besides this have been implemented, such as collision detection.
+	\subsection{Graphical Features}
+	The maze has been constructed using a number of wall objects placed at different positions.
+	These are instances of the \texttt{game\_object} class, and their graphical components are set to an instance of the \texttt{textured\_graphics\_component} class.
+	The maze also has ceiling and floor objects. These are all textured, and the appropriate textures are loaded into the program with the code used in the lab sessions. The textures are themselves located in the \texttt{./images/} directory.
+	\par
+	The maze is lit up using a number of lights. The first light moves with the camera; its position is updated to the position of the camera each display cycle. If a \texttt{camera\_object} was implemented, it would have been possible to make a light follow the camera much more simply; the camera object and a light could both be set as graphics components of a single instance of \texttt{game\_object}.
+	\par
+	A number of instances of \texttt{light\_object} are also placed around the maze with different positions, by being set as the graphical component of some instance of the \texttt{game\_object} class. These are used in conjunction with a 3D torch model for aesthetic purposes.
+	
+	\subsection{List of OpenGL Features Used}
+    \begin{itemize}
+    	\item
+    	Textures
+    	\item
+    	Lighting
+    	\item
+    	Perspective Projection
+    	\item
+    	Orthographic Projection
+    	
+    \end{itemize}
+\end{document}
