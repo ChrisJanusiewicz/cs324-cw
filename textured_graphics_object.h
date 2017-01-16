@@ -25,7 +25,6 @@ public:
     this->tex_indices = *tex_indices;
     this->tex_handle = *tex_handle;
 
-    std::cout << "wtf" << std::endl;
     calc_normals();
 
   }
@@ -81,7 +80,7 @@ public:
   }
 
   void calc_normals() {
-    std::cout << "starting to calculate normals" << std::endl;
+    //std::cout << "starting to calculate normals" << std::endl;
     point3f *result = new point3f();
     int i = 0;
     while (i < vertex_indices.size()) {

@@ -25,19 +25,18 @@ public:
   }
   virtual void display() {
 
-
+    glColor3f(0.3,0.2,0.1);
     glBegin(GL_TRIANGLES);
-      int n = 0;
       for (int i : vertex_indices) {
         glNormal3f(vertex_normals[i].x, vertex_normals[i].y, vertex_normals[i].z);
         glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
       }
     glEnd();
-
+    glColor3f(1,1,1);
 
   }
   void calc_normals() {
-    std::cout << "starting to calculate normals" << std::endl;
+    //std::cout << "starting to calculate normals" << std::endl;
     point3f *result = new point3f();
     int i = 0;
     while (i < vertex_indices.size()) {
@@ -50,8 +49,8 @@ public:
       i += 3;
     }
 
-    std::cout << vertex_normals.size() << std::endl;
-    std::cout << "Done calculating normals" << std::endl;
+    //std::cout << vertex_normals.size() << std::endl;
+    //std::cout << "Done calculating normals" << std::endl;
   }
 
 private:

@@ -27,22 +27,12 @@ public:
     parent = NULL;
     g_component = NULL;
   }
-  game_object(point3f *position,
-    point3f *scale,
-    point3f *rotation_axis,
-    float rotation_angle,
-    game_object *parent) {
 
-    this->position = *position;
-    this->rotation_axis = *rotation_axis;
-    this->scale = *scale;
-    this->parent = parent;
-
-    g_component = NULL;
-    //children = std::vector<game_object*>();
-  }
   void set_position(point3f *position) {
     this-> position = *position;
+  }
+  void set_scale(point3f *scale) {
+    this-> scale = *scale;
   }
   void set_velocity(point3f *velocity) {
     this-> velocity = *velocity;
@@ -60,7 +50,7 @@ public:
   }
   void display() {
     glPushMatrix();
-      //std::cout << "Displaying game_object" << std::endl;
+      //std::cout << scale.x << std::endl;
 
       glScalef(scale.x, scale.y, scale.z);
       glRotatef(rotation_angle, rotation_axis.x, rotation_axis.y, rotation_axis.z);
@@ -91,11 +81,11 @@ public:
     //std::cout << "Finished displaying game_object" << std::endl;
   }
   void set_game_component(game_component *g_component) {
-    std::cout << "Setting game_component of object" << std::endl;
+    //std::cout << "Setting game_component of object" << std::endl;
     this->g_component = g_component;
   }
   game_object* add_child(game_object *child) {
-    std::cout << "Adding child to tree" << std::endl;
+    //std::cout << "Adding child to tree" << std::endl;
     children.push_back(child);
     return child;
   }

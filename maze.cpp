@@ -34,6 +34,7 @@ const int NUM_SIDES = 5;
 const unsigned int DEFAULT_COLOR = 0xFFFF00FF; //ARGB
 
 std::unique_ptr<game_object> root;
+std::unique_ptr<game_object> player_torch_object;
 
 float mat_ambient[] = {0.3, 0.3, 0.3, 1.0};
 float mat_diffuse[] = {0.75, 0.75, 0.75, 1.0};
@@ -51,6 +52,16 @@ float camera_turning_speed = 1.67f;
 
 //time information
 auto last_time = std::chrono::high_resolution_clock::now();
+
+
+    light_t player_torch_light = {
+      GL_LIGHT1,
+      {1, 1, 0, 1},
+      {0.5, 0.5, 0, 1},
+      {0, 0, 0, 1},
+      {0, 0, 0, 1},
+      {0, 0, 0, 1}
+    };
 
 //mouse information
 
@@ -127,6 +138,8 @@ void update_camera(){
 
 
   //glRotatef(angle, 0.0f, 1.0f, 0.0f);
+  player_torch_object->set_position(new point3f(camera_position.x, camera_position.y, camera_position.z));
+  //player_torch_object
   gluLookAt(camera_position.x, camera_position.y, camera_position.z, // eye position
         camera_position.x + camera_direction.x, camera_position.y + camera_direction.y, camera_position.z + camera_direction.z, // reference point
         0.0f, 1.0f, 0.0f  // up vector
@@ -145,7 +158,7 @@ void display() {
 
   //glEnable(GL_LIGHTING);
 
-  glutSolidTeapot(2.0f);
+  //glutSolidTeapot(2.0f);
 
   //std::cout << "Displaying root object..." << std::endl;
   root->display();
@@ -297,51 +310,97 @@ graphics_object* prepare_graphics_object(bool texture) {
   }
 
 }
+graphics_object* prepare_torch_graphics_object(bool texture) {
+  // Returns torch graphics_texture
+
+  //initialise vector to hold vertex information
+  std::vector<point3f> vertices;
+  //wall end of horizontal stick that attaches torch to wall
+  vertices.push_back(*new point3f(-0.1, +0.1, 0));
+  vertices.push_back(*new point3f(+0.1, +0.1, 0));
+  vertices.push_back(*new point3f(-0.1, -0.1, 0));
+  vertices.push_back(*new point3f(+0.1, -0.1, 0));
+  //torch end of horizontal stick that attaches torch to wall
+  vertices.push_back(*new point3f(-0.1, +0.1, 0.4));
+  vertices.push_back(*new point3f(+0.1, +0.1, 0.4));
+  vertices.push_back(*new point3f(-0.1, -0.1, 0.25f));
+  vertices.push_back(*new point3f(+0.1, -0.1, 0.25f));
+  //top end of torch
+  vertices.push_back(*new point3f(-0.1, +0.4, 0.5));
+  vertices.push_back(*new point3f(+0.1, +0.3, 0.6));
+  vertices.push_back(*new point3f(-0.1, +0.3, 0.6));
+  vertices.push_back(*new point3f(+0.1, +0.4, 0.5));
+  //bottom end of torch
+  vertices.push_back(*new point3f(-0.1, -0.3, 0));
+  vertices.push_back(*new point3f(+0.1, -0.3, 0));
+  vertices.push_back(*new point3f(-0.1, -0.4, 0));
+  vertices.push_back(*new point3f(+0.1, -0.4, 0));
+
+
+  std::vector<int> vertex_indices{
+    0, 2, 1, 1, 2, 3,
+    4, 5, 6, 1, 6, 5,
+    0, 1, 4, 4, 1, 5,
+    3, 2, 7, 7, 2, 6,
+    2, 0, 6, 6, 0, 7,
+    1, 3, 5, 5, 3, 7,
+    8, 9,10,10, 9,11,
+    14,12,8,14, 8,10,
+    15,14,10,15,10,11,
+    12,14,13,14,15,13,
+    8,13,9,8,12,13,
+    9,13,15,9,15,11
+  };
+
+  int color = 0x654321;
+  graphics_object *g_object = new graphics_object(&vertices, &vertex_indices, color);
+
+    return g_object;
+
+}
 void prepare_maze(game_object *root) {
 
   graphics_object *wall = prepare_graphics_object(true);
+  graphics_object *torch = prepare_torch_graphics_object(true);
 
-  int maze[][7] = {{0,0,0,0,0,0,0},
-    {0,1,1,1,1,1,1},
-    {0,1,0,0,0,0,0},
-    {0,1,0,1,1,1,0},
-    {0,1,0,1,0,0,0},
-    {0,1,1,1,1,1,0},
-    {0,0,0,0,0,1,0}};
+  int maze[][8] = {
+    {0,0,0,0,1,0,0,0},
+    {0,1,1,0,1,1,1,0},
+    {0,1,0,0,0,0,1,0},
+    {0,1,0,2,1,0,1,0},
+    {0,1,0,1,1,0,1,0},
+    {0,1,0,1,0,0,1,0},
+    {0,1,1,1,1,1,1,0},
+    {0,0,0,1,0,0,0,0}};
 
     point3f scale = *new point3f(1.0f, 1.0f, 1.0f);
     point3f rotation = *new point3f(0.0f, 1.0f, 0.0f);
 
-    for (int x = 0; x < 7; x++) {
-      for (int y = 0; y < 7; y++) {
-        if (maze[x][y] == 0) {
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        if (maze[x][y] == 1) {
+
+        } else {
           game_object* g = new game_object(new point3f(3 * x-3, 0.0f, 3 * y-3));
           g->set_game_component(wall);
-          root->add_child(g);
+
+           if (maze[x][y] == 2) {
+            game_object* gt = new game_object(new point3f(0, 1.5f, 1.5));
+            gt->set_game_component(torch);
+            g->add_child(gt);
         }
+        root->add_child(g);
+      }
       }
     }
-    game_object* sun_container_object = new game_object(new point3f(0.0f, 10.0f, 0.0f));
-    game_object* sun_object = new game_object(new point3f(0.0f, 0.0f, 0.0f));
 
-    light_t light_2 = {
-      GL_LIGHT1,
-      {0, 0, 0.0f, 1.0f},
-      {1, 0.0f, 0.0f, 1.0f},
-      {0.0f, 0.0f, 1.0f, 1.0f},
-      {-0.5f, 0.75f, -2.0f, 1.0f}
-    };
+    player_torch_object->set_game_component(new light_object(player_torch_light));
+    glEnable(GL_LIGHT1);
 
-
-    sun_container_object->set_game_component(wall);
-    sun_container_object->add_child(sun_object);
-    sun_object->set_game_component(new light_object(light_2));
-    //std::cout << l << std::endl;
-    sun_container_object->set_velocity(new point3f(0, -1, 0));
-    //game_object* g = new game_object();
-    //g->set_game_component(wall);
-    //root->add_child(g);
-    root->add_child(sun_container_object);
+    root->add_child(&*player_torch_object);
+    game_object *torch1 = new game_object(new point3f(0, 0,0));
+    torch1->set_game_component(torch);
+    root->add_child(torch1);
 
 }
 void init() {
@@ -351,7 +410,7 @@ void init() {
   glEnable(GL_LIGHTING);
   glEnable(GL_COLOR_MATERIAL);
   glMatrixMode(GL_MODELVIEW);
-  float light_ambient[] = {0.1, 0.1, 0.1, 1.0};
+  float light_ambient[] = {0.01, 0, 0, 1.0};
   float light_diffuse[] = {0, 0, 0, 1.0};
   float light_position[] = {0, 1.0, -20.0, 0.0};
   float light_direction[] = {0.0, 0.0, 1.0, 1.0};
@@ -360,11 +419,9 @@ void init() {
   //glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, light_diffuse);
   //glLightfv(GL_LIGHT0, GL_POSITION, light_position);
   glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
 
 
   //glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse);
-  //glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION , 0.5f );
   //glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION , light_direction );
   //glLightf(GL_LIGHT2, GL_SPOT_CUTOFF, 15.f);
   //glEnable(GL_LIGHT2);
@@ -378,6 +435,7 @@ void init() {
   //glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
   */
   //prepare root object
+  player_torch_object.reset(new game_object());
   root.reset(new game_object());
 
   prepare_maze(&*root);

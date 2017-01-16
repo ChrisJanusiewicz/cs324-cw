@@ -17,6 +17,7 @@ public:
 	float diffuse[4];
 	float specular[4];
 	float position[4];
+	float direction[4];
 };
 
 class light_object : public game_component {
@@ -43,45 +44,17 @@ public:
     //float rand_x = float(drand48() * 5);
     //float light_position[] = {rand_x, 0, 0, 1};
 
-
-
     glLightfv(light.name, GL_AMBIENT, light.ambient);
     glLightfv(light.name, GL_DIFFUSE, light.diffuse);
     glLightfv(light.name, GL_SPECULAR, light.specular);
     glLightfv(light.name, GL_POSITION, light.position);
-    glLightf(light.name, GL_QUADRATIC_ATTENUATION, 0.1);
+    glLightf(light.name, GL_QUADRATIC_ATTENUATION, 1);
 
-    /*
-    std::cout << light->position[0] << " "
-    << light->position[1] << " "
-    << light->position[2] << std::endl;
-    std::cout << light->ambient[0] << " "
-    << light->ambient[1] << " "
-    << light->ambient[2] << std::endl;
-      */
-
-/*
-        float light_ambient[] = {0, 0, 1, 1};
-        float light_diffuse[] = {0, 0, 0, 1.0};
-        float light_position[] = {0, 1.0, -20.0, 0.0};
-        float light_direction[] = {0.0, 0.0, 1.0, 1.0};
-        glLightfv(GL_LIGHT2, GL_AMBIENT, light_ambient);
-        glLightfv(GL_LIGHT2, GL_DIFFUSE, light_diffuse);
-        glEnable(GL_LIGHT2);
-*/
-
-    /*
+		glLightf(light.name, GL_LINEAR_ATTENUATION, 0);
+		glLightf(light.name, GL_CONSTANT_ATTENUATION, 0);
   	// make the lights spot lights here
-  	float direction[3] = {
-  				-light->position[0],
-  				-light->position[1],
-  				-light->position[2]};
-  	glLightfv(light->name, GL_SPOT_DIRECTION, direction);
-  	glLightf(light->name, GL_SPOT_CUTOFF, 100.0f);
-    */
-
-    //glEnable(light->name);
-    //std::cout << "enabling: " << light->name << std::endl;
+  	//glLightfv(light.name, GL_SPOT_DIRECTION, light.direction);
+  	//glLightf(light.name, GL_SPOT_CUTOFF, 100.0f);
 
   }
 
